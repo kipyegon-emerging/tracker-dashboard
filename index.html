@@ -320,9 +320,11 @@ tbody tr:last-child td{border-bottom:none;}
       <div class="kpi-div"></div>
       <div class="kpi"><div class="num" id="kpi-kenya">67,520</div><div class="lbl">Kenya</div></div>
       <div class="kpi-div"></div>
-      <div class="kpi"><div class="num" id="kpi-countries">29+</div><div class="lbl">Countries</div></div>
+      <div class="kpi"><div class="num" id="kpi-countries">20+</div><div class="lbl">Countries</div></div>
       <div class="kpi-div"></div>
       <div class="kpi"><div class="num" id="kpi-active">21</div><div class="lbl">Active Projects</div></div>
+      <div class="kpi-div"></div>
+      <div class="kpi"><div class="num" id="kpi-ytd">1,285</div><div class="lbl">2026 YTD</div></div>
     </div>
     <div class="data-sources" style="margin-top:14px;">
       <span class="ds-badge" id="sb-global">● Global Reach</span>
@@ -341,6 +343,8 @@ tbody tr:last-child td{border-bottom:none;}
     <button class="nav-tab" onclick="switchTab('projects',this)"><i data-lucide="folder-open" class="tab-icon"></i>Projects Tracker</button>
     <button class="nav-tab" onclick="switchTab('rtf',this)"><i data-lucide="sprout" class="tab-icon"></i>RTF Pilot</button>
     <button class="nav-tab" onclick="switchTab('trends',this)"><i data-lucide="trending-up" class="tab-icon"></i>Trends</button>
+    <button class="nav-tab" onclick="switchTab('milplan',this)"><i data-lucide="table-2" class="tab-icon"></i>Mil-Plan Tracker</button>
+    <button class="nav-tab" onclick="switchTab('context',this)"><i data-lucide="layers" class="tab-icon"></i>Context Drilldown</button>
   </div>
 </div>
 
@@ -354,7 +358,7 @@ tbody tr:last-child td{border-bottom:none;}
       <p>All-time global reach summary across community and supply chain programmes · Updated <span id="ov-updated">June 2026</span></p>
     </div>
 
-    <div class="grid-4">
+    <div class="grid-5">
       <div class="stat-card">
         <div class="big" id="ov-total">102,673</div>
         <div class="label">Total Reached</div>
@@ -369,6 +373,11 @@ tbody tr:last-child td{border-bottom:none;}
         <div class="big" id="ov-2025">6,625</div>
         <div class="label">2025 Reach</div>
         <div class="desc">Globally across all programmes</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="big" id="ov-ytd">1,285</div>
+        <div class="label">2026 YTD</div>
+        <div class="desc">As of June 2026</div>
       </div>
       <div class="stat-card green">
         <div class="big" id="ov-active">21</div>
@@ -407,19 +416,7 @@ tbody tr:last-child td{border-bottom:none;}
       <div class="chart-card">
         <h3>Top Countries by Total Reach</h3>
         <div class="sub">All-time cumulative reach by country</div>
-        <div class="table-wrap" style="margin-top:8px;">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:28px;">#</th>
-                <th>Country</th>
-                <th style="text-align:right;">People Reached</th>
-                <th style="text-align:right;">Share</th>
-              </tr>
-            </thead>
-            <tbody id="country-table-body"></tbody>
-          </table>
-        </div>
+        <div class="chart-wrap" style="height:240px"><canvas id="chart-country-bar"></canvas></div>
       </div>
       <div class="chart-card">
         <h3>Key Partners by Reach</h3>
@@ -446,6 +443,30 @@ tbody tr:last-child td{border-bottom:none;}
         <h3>2026 YTD Reach by Country</h3>
         <div class="sub">January – June 2026 · From the tracker</div>
         <div class="chart-wrap" style="height:220px"><canvas id="chart-2026"></canvas></div>
+      </div>
+    </div>
+    <!-- ── PARTNER BY REACH SUMMARY ─────────────────────────────── -->
+    <div class="card" style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--purple);">Partner Reach Summary — 2023 to 2026</div>
+          <div style="font-size:11px;color:var(--brown-mid);margin-top:2px;">Total people reached per partner across all active years</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Partner / Funder</th>
+              <th>2023</th>
+              <th>2024</th>
+              <th>2025</th>
+              <th>2026</th>
+              <th>Total Reached</th>
+            </tr>
+          </thead>
+          <tbody id="partner-reach-tbody"></tbody>
+        </table>
       </div>
     </div>
   </div><!-- /overview -->
@@ -536,7 +557,7 @@ tbody tr:last-child td{border-bottom:none;}
       <select id="proj-status" onchange="filterProjects()">
         <option value="">All Statuses</option>
         <option value="In Progress">In Progress</option>
-        <option value="Completed">Completed</option>
+        <option value="Closure">Closure</option>
         <option value="Not Started">Not Started</option>
       </select>
       <select id="proj-type" onchange="filterProjects()">
@@ -680,6 +701,138 @@ tbody tr:last-child td{border-bottom:none;}
     </div>
   </div><!-- /trends -->
 
+  <!-- ═══ MIL-PLAN TRACKER ═══ -->
+  <div class="panel" id="panel-milplan">
+    <div class="section-header">
+      <h2>Mil-Plan Tracker — Partner &amp; Country Reach</h2>
+      <p>Consolidated partner-by-reach counts with country-level breakdown · 2023–2025 · All funders, all projects</p>
+    </div>
+
+    <div class="grid-3" style="margin-bottom:20px;">
+      <div class="stat-card"><div class="big" id="mp-supply">0</div><div class="label">Supply Chain Reached</div><div class="desc">Across all supply chain projects 2023–2025</div></div>
+      <div class="stat-card purple"><div class="big" id="mp-community">0</div><div class="label">Community Reached</div><div class="desc">Across all community projects 2023–2025</div></div>
+      <div class="stat-card green"><div class="big" id="mp-total">0</div><div class="label">Total Reached</div><div class="desc">Combined 2023–2025 globally</div></div>
+    </div>
+
+    <!-- M&S Country Table -->
+    <div class="card" style="margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;color:var(--purple);margin-bottom:12px;">M&amp;S — Country Reach by Year</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Country</th><th>2023</th><th>2024</th><th>2025</th><th>Total</th></tr></thead>
+          <tbody id="mp-ms-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Innocent Country Table -->
+    <div class="card" style="margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;color:var(--orange);margin-bottom:12px;">Innocent Drinks — Country Reach by Year</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Country</th><th>2023</th><th>2024</th><th>2025</th><th>Total</th></tr></thead>
+          <tbody id="mp-innocent-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- All Funders Consolidated -->
+    <div class="card">
+      <div style="font-size:14px;font-weight:700;color:var(--brown);margin-bottom:12px;">All Funders — Consolidated Country View</div>
+      <div class="filter-bar" style="margin-bottom:12px;">
+        <select id="mp-funder-filter" onchange="renderMilPlan()">
+          <option value="">All Funders</option>
+        </select>
+        <select id="mp-year-filter" onchange="renderMilPlan()">
+          <option value="">2023–2025</option>
+          <option value="2023">2023</option>
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Country</th><th>Partner / Funder</th><th>Context</th><th>Year</th><th>People Reached</th></tr></thead>
+          <tbody id="mp-all-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div><!-- /milplan -->
+
+  <!-- ═══ CONTEXT DRILLDOWN ═══ -->
+  <div class="panel" id="panel-context">
+    <div class="section-header">
+      <h2>Context Drilldown — Supply Chain vs Community</h2>
+      <p>Total reach by delivery context · Filter by country, funder, or project status · Click any row to explore further</p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:20px;">
+      <div class="stat-card" style="border-top-color:var(--purple);cursor:pointer;" onclick="setContextFilter('Supply Chain')" id="ctx-sc-card">
+        <div class="big" id="ctx-sc-total" style="color:var(--purple);">0</div>
+        <div class="label">Supply Chain Reached</div>
+        <div class="desc">Click to filter — farm &amp; factory workers, supplier staff</div>
+      </div>
+      <div class="stat-card" style="border-top-color:var(--green);cursor:pointer;" onclick="setContextFilter('Community')" id="ctx-com-card">
+        <div class="big" id="ctx-com-total" style="color:var(--green);">0</div>
+        <div class="label">Community Reached</div>
+        <div class="desc">Click to filter — UKV, RTF, church groups, youth &amp; women</div>
+      </div>
+    </div>
+
+    <div class="filter-bar" style="margin-bottom:16px;">
+      <span class="filter-label">Filter:</span>
+      <select id="ctx-context" onchange="filterContext()">
+        <option value="">All Contexts</option>
+        <option value="Supply Chain">Supply Chain</option>
+        <option value="Community">Community</option>
+      </select>
+      <select id="ctx-country" onchange="filterContext()">
+        <option value="">All Countries</option>
+      </select>
+      <select id="ctx-funder" onchange="filterContext()">
+        <option value="">All Funders</option>
+      </select>
+      <select id="ctx-year" onchange="filterContext()">
+        <option value="">All Years</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+        <option value="2026">2026</option>
+      </select>
+      <select id="ctx-status" onchange="filterContext()">
+        <option value="">All Statuses</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Closure">Closure</option>
+      </select>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:16px;">
+      <h3>Reach by Context — Annual Breakdown</h3>
+      <div class="sub">Supply Chain vs Community reached per year</div>
+      <div class="chart-wrap" style="height:240px"><canvas id="chart-context-bar"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Country</th>
+              <th>Partner / Funder</th>
+              <th>Context</th>
+              <th>Sector</th>
+              <th>Trainer(s)</th>
+              <th>People Reached</th>
+            </tr>
+          </thead>
+          <tbody id="ctx-tbody"></tbody>
+        </table>
+      </div>
+      <div id="ctx-summary" style="padding:12px 14px 0;font-size:12px;color:var(--brown-mid);border-top:1px solid rgba(30,14,4,0.07);margin-top:10px;"></div>
+    </div>
+  </div><!-- /context -->
+
 </div><!-- /main -->
 
 <script>
@@ -689,7 +842,7 @@ tbody tr:last-child td{border-bottom:none;}
 var D = {
   global: {
     years:  [2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026],
-    global: [15000,18630,14430,12070,16212,4355,0,1800,8550,9623,3993,6625,1285],
+    global: [15000,18630,14430,12070,16212,4355,0,1800,8550,9623,3993,6625,1280],
     kenya:  [8000,10900,11894,6359,3100,2300,0,1400,7020,8417,3122,4065,943]
   },
   rtf: [
@@ -699,67 +852,80 @@ var D = {
     {country:'South Africa',flag:'ZA',classes:1,reach:55,male:45,female:10,color:'#1e7e44',delivery:[]},
     {country:'India',flag:'IN',classes:0,reach:0,male:0,female:0,color:'#aaaaaa',delivery:[]}
   ],
+  // ── REACH LOG — all sessions 2023–2026 from Excel ──────────────────────────
   reach: [
-    // 2023
-    {yr:2023,country:'South Africa',location:'Western Cape',partner:'Waitrose Foundation',trainer:'Joseph Jacobs',sector:'Fruit / Supply Chain',n:80,impact:true},
-    {yr:2023,country:'Peru',location:'Rodriguez de Medoza',partner:'M&S / Matthew Algie',trainer:'Steve Miles',sector:'Coffee / Supply Chain',n:100,impact:true},
-    {yr:2023,country:'Peru',location:'San Ignacio',partner:'M&S / Matthew Algie',trainer:'Steve Miles',sector:'Coffee / Supply Chain',n:150,impact:true},
-    {yr:2023,country:'Nicaragua',location:'—',partner:'Innocent / SOSA',trainer:'Steve Miles',sector:'Pitaya / Supply Chain',n:75,impact:true},
-    {yr:2023,country:'USA',location:'Atlanta',partner:'FSS / RTF',trainer:'Steve Miles',sector:'Recruitment / Community',n:34,impact:false},
-    {yr:2023,country:'Nicaragua',location:'Yali',partner:'Innocent / SOSA',trainer:'Steve Miles',sector:'Passionfruit / Supply Chain',n:40,impact:true},
-    {yr:2023,country:'Nicaragua',location:'Tipitapa',partner:'Metanoia',trainer:'Steve Miles',sector:'Pastors / Community',n:180,impact:false},
-    {yr:2023,country:'India',location:'—',partner:'Innocent / Exotic Fruit',trainer:'Vijay Kiran',sector:'White Guava / Supply Chain',n:50,impact:true},
-    {yr:2023,country:'India',location:'—',partner:'Innocent / Mother Dairy',trainer:'Vijay Kiran',sector:'Supply Chain',n:34,impact:true},
-    {yr:2023,country:'Colombia',location:'Barranquilla',partner:'Innocent / CEA',trainer:'Steve Miles / Moises',sector:'Mango / Supply Chain',n:166,impact:true},
-    {yr:2023,country:'Kenya',location:'Various',partner:'UKV / Solania',trainer:'Kenyan Trainers',sector:'Community',n:8417,impact:true},
-    // 2024
-    {yr:2024,country:'Philippines',location:'Brookes Point, Palawan',partner:'Innocent / CardinalAgri',trainer:'Steve Miles',sector:'Coconut / Supply Chain',n:58,impact:true},
-    {yr:2024,country:'Malawi',location:'Lujeri',partner:'M&S / Ringtons (CoA)',trainer:'Steve Miles / Peter Waithaka',sector:'Tea / Supply Chain',n:107,impact:true},
-    {yr:2024,country:'Poland',location:'—',partner:'Innocent',trainer:'Steve Miles',sector:'Apples / Supply Chain',n:35,impact:false},
-    {yr:2024,country:'Rwanda',location:'Sorwathe',partner:'M&S / Ringtons (CoA)',trainer:'Steve Miles / James Andare',sector:'Tea / Supply Chain',n:157,impact:true},
-    {yr:2024,country:'USA',location:'Atlanta',partner:'FSS / RTF',trainer:'Steve Miles',sector:'Recruitment / Community',n:43,impact:false},
-    {yr:2024,country:'Peru',location:'Pichanaki',partner:'Innocent',trainer:'Steve Miles / Moises Arauz',sector:'Ginger & Turmeric / Supply Chain',n:58,impact:true},
-    {yr:2024,country:'Sierra Leone',location:'Freetown',partner:'Mayor of Freetown',trainer:'Steve Miles / Clare Miles',sector:'Women & Youth / Community',n:201,impact:true},
-    {yr:2024,country:'Madagascar',location:'Sava Region',partner:'Innocent / Symrise',trainer:'Tim Walker',sector:'Vanilla / Supply Chain',n:43,impact:true},
-    {yr:2024,country:'Kenya',location:'Various',partner:'UKV+ / M&S (CoA)',trainer:'Kenyan Trainers',sector:'Community + Supply Chain',n:3122,impact:true},
-    {yr:2024,country:'Kenya',location:'Gitaimbuka / Kiamirango / Mukuria',partner:'M&S / KTDA',trainer:'Peter / Shelmith',sector:'Tea / Supply Chain',n:147,impact:true},
-    // 2025
-    {yr:2025,country:'South Africa',location:'Madikwe Berry Farm',partner:'Waitrose Foundation',trainer:'Vuyani',sector:'Berry Farm / Supply Chain',n:53,impact:true},
-    {yr:2025,country:'India',location:'PinkCity',partner:'Monica Vinader',trainer:'Vijay Kiran',sector:'Jewellery / Supply Chain',n:42,impact:true},
-    {yr:2025,country:'Philippines',location:'Peter Paul',partner:'Innocent',trainer:'Steve Miles',sector:'Coconut / Supply Chain',n:59,impact:true},
-    {yr:2025,country:'Nicaragua',location:'—',partner:'Compassion International',trainer:'Steve Miles / Moisés',sector:'Church Youths / Community',n:140,impact:false},
-    {yr:2025,country:'Nicaragua',location:'—',partner:'Compassion International',trainer:'Steve Miles / Moisés',sector:'Pastors / Community',n:250,impact:false},
-    {yr:2025,country:'Spain',location:'SVZ Suppliers',partner:'Innocent',trainer:'Steve Miles',sector:'Company Workers / Supply Chain',n:28,impact:true},
-    {yr:2025,country:'Colombia',location:'Santa Marta',partner:'RTF',trainer:'Steve Miles',sector:'Community',n:30,impact:false},
-    {yr:2025,country:'Rwanda',location:'Assopthe',partner:'M&S (CoA)',trainer:'Cleophas',sector:'Tea / Supply Chain',n:281,impact:true},
-    {yr:2025,country:'UK',location:'—',partner:'—',trainer:'Emily Hannah',sector:'Community',n:139,impact:false},
-    {yr:2025,country:'Kenya',location:'Various',partner:'UKV+ / M&S',trainer:'Kenyan Trainers',sector:'Community + Supply Chain',n:4065,impact:true},
-    // 2026
-    {yr:2026,country:'South Africa',location:'MII',partner:'RTF',trainer:'Steve / Wangui / Vuyani',sector:'Community / Students',n:55,impact:false},
-    {yr:2026,country:'South Africa',location:'Impedle',partner:'KZN',trainer:'Vuyani',sector:'Entrepreneurs / Community',n:24,impact:false},
-    {yr:2026,country:'South Africa',location:'CentiCow',partner:'KZN',trainer:'Vuyani',sector:'Entrepreneurs / Community',n:23,impact:false},
-    {yr:2026,country:'South Africa',location:'Ixopo',partner:'KZN',trainer:'Vuyani',sector:'Entrepreneurs / Community',n:9,impact:false},
-    {yr:2026,country:'Brazil',location:'Soridaridad',partner:'Innocent / Soridaridad',trainer:'Steve Miles',sector:'Orange Farmers / Supply Chain',n:22,impact:false},
-    {yr:2026,country:'India',location:'Lunawat Gems',partner:'Monica Vinader',trainer:'Vijay',sector:'Factory Workers / Supply Chain',n:35,impact:false},
-    {yr:2026,country:'India',location:'Vinayak Jewels',partner:'Monica Vinader',trainer:'Vijay',sector:'Factory Workers / Supply Chain',n:31,impact:false},
-    {yr:2026,country:'Kenya',location:'Nairobi/Makueni/Embu/Nyamira/Murang\'a',partner:'RTF',trainer:'Kenyan Trainers',sector:'Community',n:895,impact:false},
-    {yr:2026,country:'Kenya',location:'Nduti',partner:'COA / M&S',trainer:'Steve',sector:'Tea / Supply Chain',n:48,impact:false},
-    {yr:2026,country:'Rwanda',location:'Assoptte',partner:'COA / M&S',trainer:'Cleophas',sector:'Tea / Supply Chain',n:143,impact:false}
+    // 2023 Global
+    {yr:2023,country:'South Africa',location:'Western Cape',partner:'Waitrose Foundation',trainer:'Joseph Jacobs',sector:'Fruit / Supply Chain',context:'Supply Chain',n:80,impact:true},
+    {yr:2023,country:'Peru',location:'Rodriguez de Medoza',partner:'M&S / Matthew Algie',trainer:'Steve Miles',sector:'Coffee / Supply Chain',context:'Supply Chain',n:100,impact:true},
+    {yr:2023,country:'Peru',location:'San Ignacio',partner:'M&S / Matthew Algie',trainer:'Steve Miles',sector:'Coffee / Supply Chain',context:'Supply Chain',n:150,impact:true},
+    {yr:2023,country:'Nicaragua',location:'—',partner:'Innocent / SOSA',trainer:'Steve Miles',sector:'Pitaya / Supply Chain',context:'Supply Chain',n:75,impact:true},
+    {yr:2023,country:'USA',location:'Atlanta',partner:'FSS / RTF',trainer:'Steve Miles',sector:'Recruitment / Community',context:'Community',n:34,impact:false},
+    {yr:2023,country:'Nicaragua',location:'Yali',partner:'Innocent / SOSA',trainer:'Steve Miles',sector:'Passionfruit / Supply Chain',context:'Supply Chain',n:40,impact:true},
+    {yr:2023,country:'Nicaragua',location:'Tipitapa',partner:'Metanoia',trainer:'Steve Miles',sector:'Pastors / Community',context:'Community',n:180,impact:false},
+    {yr:2023,country:'India',location:'—',partner:'Innocent / Exotic Fruit',trainer:'Vijay Kiran',sector:'White Guava / Supply Chain',context:'Supply Chain',n:50,impact:true},
+    {yr:2023,country:'India',location:'—',partner:'Innocent / Mother Dairy',trainer:'Vijay Kiran',sector:'Supply Chain',context:'Supply Chain',n:34,impact:true},
+    {yr:2023,country:'Colombia',location:'Barranquilla',partner:'Innocent / CEA',trainer:'Steve Miles / Moises',sector:'Mango / Supply Chain',context:'Supply Chain',n:166,impact:true},
+    {yr:2023,country:'Peru',location:'Chimbote',partner:'Innocent / Quicornac',trainer:'Steve Miles / Moises',sector:'Passion Fruit / Supply Chain',context:'Supply Chain',n:34,impact:true},
+    {yr:2023,country:'Brazil',location:'São Lourenço',partner:'M&S / Matthew Algie',trainer:'Steve Miles',sector:'Coffee / Supply Chain',context:'Supply Chain',n:75,impact:true},
+    {yr:2023,country:'Malawi',location:'Lujeri',partner:'M&S / Ringtons',trainer:'Steve Miles / Peter Waithaka',sector:'Tea / Supply Chain',context:'Supply Chain',n:165,impact:true},
+    // 2023 Kenya (breakdown)
+    {yr:2023,country:'Kenya',location:'Nairobi / Various',partner:'UKV / Solania',trainer:'Kenyan Trainers',sector:'Community',context:'Community',n:8355,impact:true},
+    {yr:2023,country:'Kenya',location:'Various',partner:'M&S / KTDA',trainer:'Kenyan Trainers',sector:'Tea / Supply Chain',context:'Supply Chain',n:62,impact:true},
+    // 2024 Global
+    {yr:2024,country:'Philippines',location:'Brookes Point, Palawan',partner:'Innocent / CardinalAgri',trainer:'Steve Miles',sector:'Coconut / Supply Chain',context:'Supply Chain',n:58,impact:true},
+    {yr:2024,country:'Malawi',location:'Lujeri',partner:'M&S / Ringtons (CoA)',trainer:'Steve Miles / Peter Waithaka',sector:'Tea / Supply Chain',context:'Supply Chain',n:107,impact:true},
+    {yr:2024,country:'Poland',location:'—',partner:'Innocent',trainer:'Steve Miles',sector:'Apples / Supply Chain',context:'Supply Chain',n:35,impact:false},
+    {yr:2024,country:'Rwanda',location:'Sorwathe',partner:'M&S / Ringtons (CoA)',trainer:'Steve Miles / James Andare',sector:'Tea / Supply Chain',context:'Supply Chain',n:157,impact:true},
+    {yr:2024,country:'USA',location:'Atlanta',partner:'FSS / RTF',trainer:'Steve Miles',sector:'Recruitment / Community',context:'Community',n:43,impact:false},
+    {yr:2024,country:'Peru',location:'Pichanaki',partner:'Innocent',trainer:'Steve Miles / Moises Arauz',sector:'Ginger & Turmeric / Supply Chain',context:'Supply Chain',n:58,impact:true},
+    {yr:2024,country:'Sierra Leone',location:'Freetown',partner:'Mayor of Freetown',trainer:'Steve Miles / Clare Miles',sector:'Women & Youth / Community',context:'Community',n:201,impact:true},
+    {yr:2024,country:'Madagascar',location:'Sava Region',partner:'Innocent / Symrise',trainer:'Tim Walker',sector:'Vanilla / Supply Chain',context:'Supply Chain',n:43,impact:true},
+    {yr:2024,country:'UK',location:'Birmingham',partner:'Bill Lattimer / LYN',trainer:'Steve Miles / Millie Tilby',sector:'Community',context:'Community',n:94,impact:false},
+    // 2024 Kenya breakdown
+    {yr:2024,country:'Kenya',location:'Gitaimbuka / Kiamirango / Mukuria',partner:'M&S / KTDA',trainer:'Peter / Shelmith',sector:'Tea / Supply Chain',context:'Supply Chain',n:147,impact:true},
+    {yr:2024,country:'Kenya',location:'Nrb & Naivasha',partner:'RTF',trainer:'Kenyan Trainers',sector:'Community',context:'Community',n:1647,impact:true},
+    {yr:2024,country:'Kenya',location:'Nrb & Naivasha',partner:'Solania',trainer:'Kenyan Trainers',sector:'Community',context:'Community',n:1328,impact:true},
+    // 2025 Global
+    {yr:2025,country:'South Africa',location:'Madikwe Berry Farm',partner:'Waitrose Foundation',trainer:'Vuyani',sector:'Berry Farm / Supply Chain',context:'Supply Chain',n:53,impact:true},
+    {yr:2025,country:'India',location:'PinkCity',partner:'Monica Vinader',trainer:'Vijay Kiran',sector:'Jewellery / Supply Chain',context:'Supply Chain',n:42,impact:true},
+    {yr:2025,country:'Philippines',location:'Peter Paul',partner:'Innocent',trainer:'Steve Miles',sector:'Coconut / Supply Chain',context:'Supply Chain',n:59,impact:true},
+    {yr:2025,country:'Nicaragua',location:'—',partner:'Compassion International',trainer:'Steve Miles / Moisés',sector:'Church Youths / Community',context:'Community',n:140,impact:false},
+    {yr:2025,country:'Nicaragua',location:'—',partner:'Compassion International',trainer:'Steve Miles / Moisés',sector:'Pastors / Community',context:'Community',n:250,impact:false},
+    {yr:2025,country:'Spain',location:'SVZ Suppliers',partner:'Innocent',trainer:'Steve Miles',sector:'Company Workers / Supply Chain',context:'Supply Chain',n:28,impact:true},
+    {yr:2025,country:'Colombia',location:'Santa Marta',partner:'RTF',trainer:'Steve Miles',sector:'Community',context:'Community',n:30,impact:false},
+    {yr:2025,country:'Rwanda',location:'Assopthe',partner:'M&S (CoA)',trainer:'Cleophas',sector:'Tea / Supply Chain',context:'Supply Chain',n:281,impact:true},
+    {yr:2025,country:'UK',location:'—',partner:'—',trainer:'Emily Hannah',sector:'Community',context:'Community',n:139,impact:false},
+    {yr:2025,country:'USA',location:'—',partner:'FSS',trainer:'FSS',sector:'Community',context:'Community',n:1538,impact:false},
+    // 2025 Kenya breakdown
+    {yr:2025,country:'Kenya',location:'Nduti / Momul / Gacharage',partner:'M&S (CoA)',trainer:'Kenyan Trainers',sector:'Tea / Supply Chain',context:'Supply Chain',n:917,impact:true},
+    {yr:2025,country:'Kenya',location:'Nrb & Naivasha',partner:'Solania',trainer:'Kenyan Trainers',sector:'Community',context:'Community',n:2994,impact:true},
+    {yr:2025,country:'Kenya',location:'Nrb & Makueni',partner:'WCW',trainer:'Kenyan Trainers',sector:'PWD / Community',context:'Community',n:154,impact:true},
+    // 2026 Global
+    {yr:2026,country:'South Africa',location:'MII',partner:'RTF',trainer:'Steve / Wangui / Vuyani',sector:'Students / Community',context:'Community',n:55,impact:false},
+    {yr:2026,country:'South Africa',location:'Impedle',partner:'KZN',trainer:'Vuyani',sector:'Entrepreneurs / Community',context:'Community',n:24,impact:false},
+    {yr:2026,country:'South Africa',location:'CentiCow',partner:'KZN',trainer:'Vuyani',sector:'Entrepreneurs / Community',context:'Community',n:23,impact:false},
+    {yr:2026,country:'South Africa',location:'Ixopo',partner:'KZN',trainer:'Vuyani',sector:'Entrepreneurs / Community',context:'Community',n:9,impact:false},
+    {yr:2026,country:'Brazil',location:'Soridaridad',partner:'Innocent / Soridaridad',trainer:'Steve Miles',sector:'Orange Farmers / Supply Chain',context:'Supply Chain',n:22,impact:false},
+    {yr:2026,country:'India',location:'Lunawat Gems',partner:'Monica Vinader',trainer:'Vijay',sector:'Factory Workers / Supply Chain',context:'Supply Chain',n:35,impact:false},
+    {yr:2026,country:'India',location:'Vinayak Jewels',partner:'Monica Vinader',trainer:'Vijay',sector:'Factory Workers / Supply Chain',context:'Supply Chain',n:31,impact:false},
+    {yr:2026,country:'Kenya',location:"Nairobi/Makueni/Embu/Nyamira/Murang'a",partner:'RTF',trainer:'Kenyan Trainers',sector:'Community',context:'Community',n:895,impact:false},
+    {yr:2026,country:'Kenya',location:'Nduti',partner:'COA / M&S',trainer:'Steve',sector:'Tea / Supply Chain',context:'Supply Chain',n:48,impact:false},
+    {yr:2026,country:'Rwanda',location:'Assoptte',partner:'COA / M&S',trainer:'Cleophas',sector:'Tea / Supply Chain',context:'Supply Chain',n:143,impact:false}
   ],
   projects: [
-    {name:'UWEZO KWA VIJANA',loc:'Kenya — Nairobi & Naivasha',funder:'Rising Tide Foundation',type:'Community',target:20000,n:18008,yr:'2022–2024',due:'Jan 2027',st:'Completed',team:'Kenyan Team',country:'Kenya'},
-    {name:'Cup of Ambition — Peru (Grp 1)',loc:'Peru — Rodriguez de Medoza',funder:'M&S',type:'Supply Chain',target:250,n:250,yr:'Feb 2023',due:'Jan 2025',st:'Completed',team:'Steve Miles',country:'Peru'},
-    {name:'Cup of Ambition — Brazil (Ph.1)',loc:'Brazil',funder:'M&S',type:'Supply Chain',target:80,n:75,yr:'Nov 2023',due:'Jan 2025',st:'Completed',team:'Steve Miles',country:'Brazil'},
-    {name:'Cup of Ambition — Malawi (Sukambizi)',loc:'Malawi — Sukambizi',funder:'M&S',type:'Supply Chain',target:300,n:271,yr:'Dec 2023–Jul 2024',due:'Jan 2025',st:'Completed',team:'Steve Miles / Peter',country:'Malawi'},
-    {name:'Philippines — Coconut Farmers',loc:'Philippines — Brookes Point',funder:'Innocent Drinks',type:'Supply Chain',target:60,n:54,yr:'Jul 2024',due:'Jul 2025',st:'Completed',team:'Steve Miles',country:'Philippines'},
-    {name:'UKV+',loc:'Nairobi, Kajiado, Kiambu, Nakuru, Machakos',funder:'Solania',type:'Community',target:5000,n:4200,yr:'Oct 2024–Sept 2025',due:'Done',st:'Completed',team:'Kenyan Trainers',country:'Kenya'},
-    {name:'Cup of Ambition — Kenya (Nduti)',loc:'Kenya — Nduti',funder:'M&S',type:'Supply Chain',target:150,n:147,yr:'Jun–Jul 2024',due:'Jan 2025',st:'Completed',team:'Peter / Shelmith',country:'Kenya'},
-    {name:'Cup of Ambition — Rwanda (Sorwathe)',loc:'Rwanda — Sorwathe',funder:'M&S',type:'Supply Chain',target:160,n:157,yr:'Aug 2024',due:'Jan 2025',st:'Completed',team:'Steve / James Andare',country:'Rwanda'},
-    {name:'Peru — Ginger & Turmeric Farmers',loc:'Peru — Pichanaki',funder:'Innocent Drinks',type:'Supply Chain',target:60,n:58,yr:'Oct 2024',due:'Jun 2025',st:'Completed',team:'Steve Miles / Moises',country:'Peru'},
-    {name:'Sierra Leone',loc:'Sierra Leone — Freetown',funder:'Emerging Leaders',type:'Community',target:200,n:200,yr:'Oct 2024',due:'Mar 2025',st:'Completed',team:'Steve / Clare Miles',country:'Sierra Leone'},
-    {name:'PinkCity Jewellery Factory',loc:'India — PinkCity',funder:'Monica Vinader',type:'Supply Chain',target:45,n:42,yr:'Apr 2025',due:'Jan 2026',st:'Completed',team:'Vijay Kiran',country:'India'},
-    {name:'Madagascar — Vanilla Farmers',loc:'Madagascar — Sava Region',funder:'Innocent Drinks',type:'Supply Chain',target:45,n:41,yr:'Nov 2024',due:'End Jul 2025',st:'Completed',team:'Tim Walker',country:'Madagascar'},
-    {name:'Cup of Ambition — Kenya (Momul)',loc:'Kenya — Momul',funder:'M&S',type:'Supply Chain',target:200,n:179,yr:'Feb–Mar 2025',due:'Aug 2025',st:'Completed',team:'Steve Miles',country:'Kenya'},
+    {name:'UWEZO KWA VIJANA',loc:'Kenya — Nairobi & Naivasha',funder:'Rising Tide Foundation',type:'Community',target:20000,n:18008,yr:'2022–2024',due:'Jan 2027',st:'Closure',team:'Kenyan Team',country:'Kenya'},
+    {name:'Cup of Ambition — Peru (Grp 1)',loc:'Peru — Rodriguez de Medoza',funder:'M&S',type:'Supply Chain',target:250,n:250,yr:'Feb 2023',due:'Jan 2025',st:'Closure',team:'Steve Miles',country:'Peru'},
+    {name:'Cup of Ambition — Brazil (Ph.1)',loc:'Brazil',funder:'M&S',type:'Supply Chain',target:80,n:75,yr:'Nov 2023',due:'Jan 2025',st:'Closure',team:'Steve Miles',country:'Brazil'},
+    {name:'Cup of Ambition — Malawi (Sukambizi)',loc:'Malawi — Sukambizi',funder:'M&S',type:'Supply Chain',target:300,n:271,yr:'Dec 2023–Jul 2024',due:'Jan 2025',st:'Closure',team:'Steve Miles / Peter',country:'Malawi'},
+    {name:'Philippines — Coconut Farmers',loc:'Philippines — Brookes Point',funder:'Innocent Drinks',type:'Supply Chain',target:60,n:54,yr:'Jul 2024',due:'Jul 2025',st:'Closure',team:'Steve Miles',country:'Philippines'},
+    {name:'UKV+',loc:'Nairobi, Kajiado, Kiambu, Nakuru, Machakos',funder:'Solania',type:'Community',target:5000,n:4200,yr:'Oct 2024–Sept 2025',due:'Done',st:'Closure',team:'Kenyan Trainers',country:'Kenya'},
+    {name:'Cup of Ambition — Kenya (Nduti)',loc:'Kenya — Nduti',funder:'M&S',type:'Supply Chain',target:150,n:147,yr:'Jun–Jul 2024',due:'Jan 2025',st:'Closure',team:'Peter / Shelmith',country:'Kenya'},
+    {name:'Cup of Ambition — Rwanda (Sorwathe)',loc:'Rwanda — Sorwathe',funder:'M&S',type:'Supply Chain',target:160,n:157,yr:'Aug 2024',due:'Jan 2025',st:'Closure',team:'Steve / James Andare',country:'Rwanda'},
+    {name:'Peru — Ginger & Turmeric Farmers',loc:'Peru — Pichanaki',funder:'Innocent Drinks',type:'Supply Chain',target:60,n:58,yr:'Oct 2024',due:'Jun 2025',st:'Closure',team:'Steve Miles / Moises',country:'Peru'},
+    {name:'Sierra Leone',loc:'Sierra Leone — Freetown',funder:'Emerging Leaders',type:'Community',target:200,n:200,yr:'Oct 2024',due:'Mar 2025',st:'Closure',team:'Steve / Clare Miles',country:'Sierra Leone'},
+    {name:'PinkCity Jewellery Factory',loc:'India — PinkCity',funder:'Monica Vinader',type:'Supply Chain',target:45,n:42,yr:'Apr 2025',due:'Jan 2026',st:'Closure',team:'Vijay Kiran',country:'India'},
+    {name:'Madagascar — Vanilla Farmers',loc:'Madagascar — Sava Region',funder:'Innocent Drinks',type:'Supply Chain',target:45,n:41,yr:'Nov 2024',due:'End Jul 2025',st:'Closure',team:'Tim Walker',country:'Madagascar'},
+    {name:'Cup of Ambition — Kenya (Momul)',loc:'Kenya — Momul',funder:'M&S',type:'Supply Chain',target:200,n:179,yr:'Feb–Mar 2025',due:'Aug 2025',st:'Closure',team:'Steve Miles',country:'Kenya'},
     // In Progress
     {name:'Empowering Berry Farmers — SA',loc:'South Africa — Madikwe',funder:'Waitrose Foundation',type:'Supply Chain',target:80,n:53,yr:'Jan 2025',due:'Jan–Feb 2026',st:'In Progress',team:'Vuyani',country:'South Africa'},
     {name:'Carina Farm',loc:'South Africa',funder:'Waitrose Foundation',type:'Supply Chain',target:100,n:80,yr:'Jan 2023',due:'—',st:'In Progress',team:'Vuyani',country:'South Africa'},
@@ -815,16 +981,18 @@ function renderOverview(){
   var total=0,kTot=0,active=0,done=0,ns=0;
   g.global.forEach(function(v){total+=v;});
   g.kenya.forEach(function(v){kTot+=v;});
-  m.forEach(function(p){if(p.st==='In Progress')active++;else if(p.st==='Completed')done++;else ns++;});
+  m.forEach(function(p){if(p.st==='In Progress')active++;else if(p.st==='Closure')done++;else ns++;});
 
   // Update header KPIs
   el('kpi-total').textContent=fmt(total);
   el('kpi-kenya').textContent=fmt(kTot);
   el('kpi-active').textContent=active;
   var last=g.global.length-1;
+  el('kpi-ytd').textContent=fmt(g.global[last]);
   el('ov-total').textContent=fmt(total);
   el('ov-kenya').textContent=fmt(kTot);
   el('ov-2025').textContent=fmt(g.global[last-1]);
+  el('ov-ytd').textContent=fmt(g.global[last]);
   el('ov-active').textContent=active;
   el('pt-total').textContent=m.length;
   el('pt-active').textContent=active;
@@ -860,31 +1028,27 @@ function renderOverview(){
   // Status donut
   dc('chart-status-donut');
   CH['chart-status-donut']=new Chart(el('chart-status-donut'),{type:'doughnut',
-    data:{labels:['Completed','In Progress','Not Started'],datasets:[{data:[done,active,ns],backgroundColor:[CG,CO,'#9ca3af'],borderWidth:0,hoverOffset:4}]},
+    data:{labels:['Closure','In Progress','Not Started'],datasets:[{data:[done,active,ns],backgroundColor:[CG,CO,'#9ca3af'],borderWidth:0,hoverOffset:4}]},
     options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false},tooltip:TT}}
   });
-  var sNames=['Completed','In Progress','Not Started'],sVals=[done,active,ns],sColors=[CG,CO,'#9ca3af'],stH='';
+  var sNames=['Closure','In Progress','Not Started'],sVals=[done,active,ns],sColors=[CG,CO,'#9ca3af'],stH='';
   sNames.forEach(function(n,i){stH+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:9px;height:9px;border-radius:2px;background:'+sColors[i]+'"></div><span style="flex:1;font-size:11px;color:var(--brown-mid)">'+n+'</span><span style="font-size:11px;font-weight:700">'+sVals[i]+'</span></div>';});
   el('status-legend').innerHTML=stH;
 
-  // Country table (build from reach log)
+  // Country bar (build from reach log)
   var cMap={};
   D.reach.forEach(function(r){cMap[r.country]=(cMap[r.country]||0)+r.n;});
+  // add Kenya from global
   var kTotal=0; D.global.kenya.forEach(function(v){kTotal+=v;});
   cMap['Kenya']=kTotal;
-  var cArr=Object.entries(cMap).sort(function(a,b){return b[1]-a[1];});
-  var grandTotal=cArr.reduce(function(s,e){return s+e[1];},0);
-  var rowColors=[COA,CPA,CGA,'rgba(217,119,6,0.7)'];
-  var tH='';
-  cArr.forEach(function(e,i){
-    var pct=grandTotal>0?((e[1]/grandTotal)*100).toFixed(1)+'%':'—';
-    var dot='<div style="width:8px;height:8px;border-radius:50%;background:'+rowColors[i%rowColors.length]+';display:inline-block;margin-right:6px;flex-shrink:0;"></div>';
-    tH+='<tr><td style="color:var(--brown-mid);font-weight:600;">'+(i+1)+'</td>'+
-        '<td><div style="display:flex;align-items:center;">'+dot+e[0]+'</div></td>'+
-        '<td style="text-align:right;font-weight:700;color:var(--brown);">'+e[1].toLocaleString()+'</td>'+
-        '<td style="text-align:right;color:var(--brown-mid);">'+pct+'</td></tr>';
+  var cArr=Object.entries(cMap).sort(function(a,b){return b[1]-a[1];}).slice(0,8);
+  var cL=cArr.map(function(e){return e[0];}),cV=cArr.map(function(e){return e[1];});
+  var cBC=cL.map(function(c,i){return i%2===0?COA:CPA;});
+  dc('chart-country-bar');
+  CH['chart-country-bar']=new Chart(el('chart-country-bar'),{type:'bar',
+    data:{labels:cL,datasets:[{data:cV,backgroundColor:cBC,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:TT},scales:axBase(false)}
   });
-  el('country-table-body').innerHTML=tH;
 
   // Funders
   var fMap={};
@@ -1002,7 +1166,7 @@ function renderProjCards(){
   projFiltered.forEach(function(p){
     var pct=p.target>0?Math.min(100,Math.round(p.n/p.target*100)):0;
     var tc=p.type==='Supply Chain'?'supply':'community';
-    var sc=p.st==='Completed'?'pill-done':p.st==='In Progress'?'pill-prog':'pill-ns';
+    var sc=p.st==='Closure'?'pill-done':p.st==='In Progress'?'pill-prog':'pill-ns';
     html+='<div class="proj-card '+tc+'">'+
       '<div class="proj-card-top">'+
         '<div class="proj-name">'+p.name+'</div>'+
@@ -1034,7 +1198,7 @@ function renderProjCards(){
 function renderProjTable(){
   var rows='';
   projFiltered.forEach(function(p){
-    var sc=p.st==='Completed'?'pill-done':p.st==='In Progress'?'pill-prog':'pill-ns';
+    var sc=p.st==='Closure'?'pill-done':p.st==='In Progress'?'pill-prog':'pill-ns';
     var tc=p.type==='Supply Chain'?'pill-supply':'pill-community';
     var pct=p.target>0?Math.min(100,Math.round(p.n/p.target*100)):0;
     rows+='<tr>'+
@@ -1266,7 +1430,184 @@ window.addEventListener('load',function(){
   setSB('sb-meal','Embedded data');
   // Auto-fetch on page load
   refreshAll();
+  renderPartnerReach();
+  initContextFilters();
 });
+
+// ── PARTNER REACH SUMMARY (Overview tab) ─────────────────────────────────────
+function renderPartnerReach() {
+  const years = [2023,2024,2025,2026];
+  const partnerMap = {};
+  D.reach.forEach(function(r) {
+    var key = r.partner.split('/')[0].trim();
+    if (!partnerMap[key]) partnerMap[key] = {2023:0,2024:0,2025:0,2026:0};
+    partnerMap[key][r.yr] = (partnerMap[key][r.yr]||0) + r.n;
+  });
+  var sorted = Object.entries(partnerMap).sort(function(a,b){
+    var ta = years.reduce(function(s,y){return s+(a[1][y]||0);},0);
+    var tb = years.reduce(function(s,y){return s+(b[1][y]||0);},0);
+    return tb-ta;
+  });
+  var tbody = document.getElementById('partner-reach-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = sorted.map(function(e){
+    var p=e[0], yrs=e[1];
+    var tot = years.reduce(function(s,y){return s+(yrs[y]||0);},0);
+    return '<tr><td style="font-weight:600">'+p+'</td>'
+      +years.map(function(y){return '<td>'+(yrs[y]?yrs[y].toLocaleString():'—')+'</td>';}).join('')
+      +'<td style="font-weight:700;color:var(--purple)">'+tot.toLocaleString()+'</td></tr>';
+  }).join('');
+}
+
+// ── MIL-PLAN TRACKER ─────────────────────────────────────────────────────────
+function renderMilPlan() {
+  var fFilter = (document.getElementById('mp-funder-filter')||{}).value||'';
+  var yFilter = (document.getElementById('mp-year-filter')||{}).value||'';
+  var years = [2023,2024,2025];
+
+  // Populate funder dropdown once
+  var funderSel = document.getElementById('mp-funder-filter');
+  if (funderSel && funderSel.options.length<=1) {
+    var funders = [];
+    D.reach.forEach(function(r){ var k=r.partner.split('/')[0].trim(); if(funders.indexOf(k)<0)funders.push(k); });
+    funders.sort().forEach(function(f){ var o=document.createElement('option');o.value=f;o.text=f;funderSel.appendChild(o); });
+  }
+
+  var subset = D.reach.filter(function(r){
+    var k = r.partner.split('/')[0].trim();
+    return (!fFilter||k===fFilter) && (!yFilter||r.yr===+yFilter) && r.yr>=2023 && r.yr<=2025;
+  });
+
+  var sc  = subset.filter(function(r){return r.context==='Supply Chain';}).reduce(function(s,r){return s+r.n;},0);
+  var com = subset.filter(function(r){return r.context==='Community';}).reduce(function(s,r){return s+r.n;},0);
+  document.getElementById('mp-supply').textContent    = sc.toLocaleString();
+  document.getElementById('mp-community').textContent = com.toLocaleString();
+  document.getElementById('mp-total').textContent     = (sc+com).toLocaleString();
+
+  function buildFunderCountry(kw) {
+    var rows={};
+    D.reach.filter(function(r){return r.yr>=2023&&r.yr<=2025&&r.partner.toLowerCase().indexOf(kw.toLowerCase())>=0;}).forEach(function(r){
+      if(!rows[r.country])rows[r.country]={2023:0,2024:0,2025:0};
+      rows[r.country][r.yr]=(rows[r.country][r.yr]||0)+r.n;
+    });
+    return Object.entries(rows).sort(function(a,b){
+      return (b[1][2023]+b[1][2024]+b[1][2025])-(a[1][2023]+a[1][2024]+a[1][2025]);
+    }).map(function(e){
+      var c=e[0],y=e[1],t=y[2023]+y[2024]+y[2025];
+      return '<tr><td>'+c+'</td>'+years.map(function(yr){return '<td>'+(y[yr]||'—')+'</td>';}).join('')+'<td style="font-weight:700">'+t.toLocaleString()+'</td></tr>';
+    }).join('');
+  }
+  var msBody  = document.getElementById('mp-ms-tbody');
+  if(msBody)  msBody.innerHTML  = buildFunderCountry('M&S');
+  var innBody = document.getElementById('mp-innocent-tbody');
+  if(innBody) innBody.innerHTML = buildFunderCountry('Innocent');
+
+  var allBody = document.getElementById('mp-all-tbody');
+  if(allBody){
+    var rows2 = subset.slice().sort(function(a,b){return b.n-a.n;});
+    allBody.innerHTML = rows2.length ? rows2.map(function(r){
+      return '<tr><td>'+r.country+'</td><td>'+r.partner+'</td>'
+        +'<td><span class="pill '+(r.context==='Supply Chain'?'pill-prog':'pill-start')+'">'+r.context+'</span></td>'
+        +'<td>'+r.yr+'</td><td style="font-weight:700">'+r.n.toLocaleString()+'</td></tr>';
+    }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--brown-mid)">No data for selected filters</td></tr>';
+  }
+}
+
+// ── CONTEXT DRILLDOWN ─────────────────────────────────────────────────────────
+var ctxBarChart = null;
+function setContextFilter(ctx) {
+  var sel = document.getElementById('ctx-context');
+  if(sel){sel.value=ctx; filterContext();}
+}
+function initContextFilters() {
+  var countries=[],funders=[];
+  D.reach.forEach(function(r){
+    if(countries.indexOf(r.country)<0)countries.push(r.country);
+    var f=r.partner.split('/')[0].trim();
+    if(funders.indexOf(f)<0)funders.push(f);
+  });
+  countries.sort(); funders.sort();
+  var cSel=document.getElementById('ctx-country');
+  var fSel=document.getElementById('ctx-funder');
+  if(cSel)countries.forEach(function(c){var o=document.createElement('option');o.value=c;o.text=c;cSel.appendChild(o);});
+  if(fSel)funders.forEach(function(f){var o=document.createElement('option');o.value=f;o.text=f;fSel.appendChild(o);});
+}
+function filterContext() {
+  var ctx  =(document.getElementById('ctx-context')||{}).value||'';
+  var cntry=(document.getElementById('ctx-country')||{}).value||'';
+  var fund =(document.getElementById('ctx-funder')||{}).value||'';
+  var yr   =(document.getElementById('ctx-year')||{}).value||'';
+
+  var rows = D.reach.filter(function(r){
+    var fKey=r.partner.split('/')[0].trim();
+    return (!ctx   || r.context===ctx)
+        && (!cntry || r.country===cntry)
+        && (!fund  || fKey===fund)
+        && (!yr    || r.yr===+yr);
+  });
+
+  var allSC  = D.reach.filter(function(r){return r.context==='Supply Chain';}).reduce(function(s,r){return s+r.n;},0);
+  var allCom = D.reach.filter(function(r){return r.context==='Community';}).reduce(function(s,r){return s+r.n;},0);
+  var scEl  = document.getElementById('ctx-sc-total');
+  var comEl = document.getElementById('ctx-com-total');
+  if(scEl)  scEl.textContent  = allSC.toLocaleString();
+  if(comEl) comEl.textContent = allCom.toLocaleString();
+
+  ['ctx-sc-card','ctx-com-card'].forEach(function(id){
+    var el2=document.getElementById(id); if(el2)el2.classList.remove('active-card');
+  });
+  if(ctx==='Supply Chain'&&document.getElementById('ctx-sc-card')) document.getElementById('ctx-sc-card').classList.add('active-card');
+  if(ctx==='Community'   &&document.getElementById('ctx-com-card')) document.getElementById('ctx-com-card').classList.add('active-card');
+
+  var tbody2=document.getElementById('ctx-tbody');
+  if(tbody2){
+    var sorted2=rows.slice().sort(function(a,b){return b.n-a.n;});
+    tbody2.innerHTML = sorted2.length ? sorted2.map(function(r){
+      return '<tr><td>'+r.yr+'</td><td>'+r.country+'</td><td>'+r.partner+'</td>'
+        +'<td><span class="pill '+(r.context==='Supply Chain'?'pill-prog':'pill-start')+'">'+r.context+'</span></td>'
+        +'<td>'+r.sector+'</td><td>'+r.trainer+'</td>'
+        +'<td style="font-weight:700">'+r.n.toLocaleString()+'</td></tr>';
+    }).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--brown-mid)">No matching sessions</td></tr>';
+  }
+
+  var total2=rows.reduce(function(s,r){return s+r.n;},0);
+  var sumEl=document.getElementById('ctx-summary');
+  if(sumEl) sumEl.textContent='Showing '+rows.length+' session'+(rows.length!==1?'s':'')+' · '+total2.toLocaleString()+' people reached';
+
+  var yrs=[2023,2024,2025,2026];
+  var scByYr =yrs.map(function(y){return D.reach.filter(function(r){return r.yr===y&&r.context==='Supply Chain';}).reduce(function(s,r){return s+r.n;},0);});
+  var comByYr=yrs.map(function(y){return D.reach.filter(function(r){return r.yr===y&&r.context==='Community';}).reduce(function(s,r){return s+r.n;},0);});
+  var canvas=document.getElementById('chart-context-bar');
+  if(canvas&&typeof Chart!=='undefined'){
+    if(ctxBarChart)ctxBarChart.destroy();
+    ctxBarChart=new Chart(canvas,{
+      type:'bar',
+      data:{labels:['2023','2024','2025','2026'],datasets:[
+        {label:'Supply Chain',data:scByYr,backgroundColor:'rgba(91,53,128,0.75)',borderRadius:4},
+        {label:'Community',   data:comByYr,backgroundColor:'rgba(30,126,68,0.75)',borderRadius:4}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{position:'top'},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+c.raw.toLocaleString();}}}},
+        scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{callback:function(v){return v>=1000?Math.round(v/1000)+'k':v;}}}}}
+    });
+  }
+}
+
+// Patch switchTab to trigger new renders
+var _origSwitch = typeof switchTab === 'function' ? switchTab : function(){};
+function switchTab(id, elBtn) {
+  // call original (panel show/hide)
+  var panels=document.querySelectorAll('.panel');
+  panels.forEach(function(p){p.classList.remove('active');});
+  var target=document.getElementById('panel-'+id);
+  if(target)target.classList.add('active');
+  var tabs=document.querySelectorAll('.nav-tab');
+  tabs.forEach(function(t){t.classList.remove('active');});
+  if(elBtn)elBtn.classList.add('active');
+  if(id==='overview') setTimeout(renderPartnerReach,50);
+  if(id==='milplan')  setTimeout(renderMilPlan,50);
+  if(id==='context')  setTimeout(function(){initContextFilters();filterContext();},50);
+}
 </script>
 </body>
 </html>
