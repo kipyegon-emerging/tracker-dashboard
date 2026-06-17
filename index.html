@@ -313,7 +313,7 @@ tbody tr:last-child td{border-bottom:none;}
       </button>
     </div>
     <div class="header-kpis">
-      <div class="kpi"><div class="num" id="kpi-total">112,568</div><div class="lbl">Total People Reached</div></div>
+      <div class="kpi"><div class="num" id="kpi-total">112,568</div><div class="lbl">Total Reached (Cumulative since 2014)</div></div>
       <div class="kpi-div"></div>
       <div class="kpi"><div class="num" id="kpi-kenya">67,520</div><div class="lbl">Kenya</div></div>
       <div class="kpi-div"></div>
@@ -459,9 +459,36 @@ tbody tr:last-child td{border-bottom:none;}
         <div class="chart-wrap" style="height:260px"><canvas id="chart-global-line"></canvas></div>
       </div>
       <div class="chart-card">
-        <h3>Top Countries by Total Reach</h3>
-        <div class="sub">All-time cumulative reach by country</div>
-        <div class="chart-wrap" style="height:260px"><canvas id="chart-country-bar"></canvas></div>
+        <h3>All-time Cumulative Reach by Country</h3>
+        <div class="sub">Cumulative reach since 2014 · All countries · Sourced from tracker</div>
+        <div class="table-wrap" style="margin-top:10px;">
+          <table>
+            <thead><tr><th>Country</th><th style="text-align:right;">Total Reached</th></tr></thead>
+            <tbody>
+              <tr><td><span class="country-flag">🇰🇪 Kenya</span></td><td style="font-weight:800;color:var(--orange);text-align:right;">67,520</td></tr>
+              <tr><td><span class="country-flag">🇺🇸 USA</span></td><td style="font-weight:700;text-align:right;">1,615</td></tr>
+              <tr><td><span class="country-flag">🇳🇮 Nicaragua</span></td><td style="font-weight:700;text-align:right;">708</td></tr>
+              <tr><td><span class="country-flag">🇷🇼 Rwanda</span></td><td style="font-weight:700;text-align:right;">581</td></tr>
+              <tr><td><span class="country-flag">🇵🇪 Peru</span></td><td style="font-weight:700;text-align:right;">417</td></tr>
+              <tr><td><span class="country-flag">🇲🇼 Malawi</span></td><td style="font-weight:700;text-align:right;">272</td></tr>
+              <tr><td><span class="country-flag">🇿🇦 South Africa</span></td><td style="font-weight:700;text-align:right;">244</td></tr>
+              <tr><td><span class="country-flag">🇬🇧 UK</span></td><td style="font-weight:700;text-align:right;">233</td></tr>
+              <tr><td><span class="country-flag">🇸🇱 Sierra Leone</span></td><td style="font-weight:700;text-align:right;">201</td></tr>
+              <tr><td><span class="country-flag">🇨🇴 Colombia</span></td><td style="font-weight:700;text-align:right;">196</td></tr>
+              <tr><td><span class="country-flag">🇮🇳 India</span></td><td style="font-weight:700;text-align:right;">192</td></tr>
+              <tr><td><span class="country-flag">🇧🇷 Brazil</span></td><td style="font-weight:700;text-align:right;">97</td></tr>
+              <tr><td><span class="country-flag">🇵🇭 Philippines</span></td><td style="font-weight:700;text-align:right;">117</td></tr>
+              <tr><td><span class="country-flag">🇲🇬 Madagascar</span></td><td style="font-weight:700;text-align:right;">43</td></tr>
+              <tr><td><span class="country-flag">🇵🇱 Poland</span></td><td style="font-weight:700;text-align:right;">35</td></tr>
+              <tr><td><span class="country-flag">🇪🇸 Spain</span></td><td style="font-weight:700;text-align:right;">28</td></tr>
+              <tr style="border-top:2px solid rgba(30,14,4,0.12);">
+                <td style="font-weight:800;color:var(--purple);">TOTAL (reach log countries)</td>
+                <td style="font-weight:800;color:var(--purple);text-align:right;">72,499</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="font-size:10px;color:var(--brown-mid);opacity:0.6;margin-top:8px;">* Kenya figure sourced from historical global data (2014–2026). All other countries from reach log (2023–2026).</div>
+        </div>
       </div>
     </div>
 
@@ -615,11 +642,11 @@ tbody tr:last-child td{border-bottom:none;}
   <div class="panel" id="panel-rtf">
     <div class="section-header">
       <h2>Rising Tide Foundation — Pilot Countries</h2>
-      <p>Community-level EL pilot roll-out · Kenya, Colombia, South Africa &amp; India · 2025–2027</p>
+      <p>Community-level EL pilot roll-out · Kenya, Colombia, South Africa &amp; India · 2025–2027 · <strong>4 Countries</strong></p>
     </div>
 
     <div class="grid-4">
-      <div class="stat-card"><div class="big" id="rtf-total">980</div><div class="label">Total RTF Reach</div><div class="desc">Across all 3 active countries</div></div>
+      <div class="stat-card"><div class="big" id="rtf-total">980</div><div class="label">Total RTF Reach</div><div class="desc">Across all 4 countries</div></div>
       <div class="stat-card purple"><div class="big" id="rtf-male">399</div><div class="label">Total Male</div><div class="desc">Male participants</div></div>
       <div class="stat-card"><div class="big" id="rtf-female">581</div><div class="label">Total Female</div><div class="desc">Female participants</div></div>
       <div class="stat-card green"><div class="big" id="rtf-classes">25</div><div class="label">Classes Delivered</div><div class="desc">Total sessions completed</div></div>
@@ -630,13 +657,94 @@ tbody tr:last-child td{border-bottom:none;}
     <div class="grid-2">
       <div class="chart-card">
         <h3>Kenya — Delivery Method Breakdown</h3>
-        <div class="sub">Classes by delivery type</div>
-        <div class="chart-wrap" style="height:220px"><canvas id="chart-rtf-kenya"></canvas></div>
+        <div class="sub">Reach by delivery pathway · From tracker (2026)</div>
+        <div class="table-wrap" style="margin-top:10px;">
+          <table>
+            <thead><tr><th>Delivery Method</th><th style="text-align:right;">Classes</th><th style="text-align:right;">Reach</th></tr></thead>
+            <tbody>
+              <tr><td><span class="pill pill-community">Direct Delivery — Community</span></td><td style="text-align:right;">16</td><td style="font-weight:700;color:var(--green);text-align:right;">604</td></tr>
+              <tr><td><span class="pill pill-supply">Direct Delivery — Partner Org</span></td><td style="text-align:right;">6</td><td style="font-weight:700;color:var(--purple);text-align:right;">245</td></tr>
+              <tr><td><span class="pill pill-ns">New Established Trainer</span></td><td style="text-align:right;">1</td><td style="font-weight:700;text-align:right;">46</td></tr>
+              <tr style="border-top:2px solid rgba(30,14,4,0.1);"><td style="font-weight:700;">Total</td><td style="font-weight:700;text-align:right;">23</td><td style="font-weight:800;color:var(--orange);text-align:right;">895</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="chart-wrap" style="height:160px;margin-top:14px;"><canvas id="chart-rtf-kenya"></canvas></div>
       </div>
       <div class="chart-card">
         <h3>Active Country Comparison</h3>
         <div class="sub">Reach per pilot country so far</div>
         <div class="chart-wrap" style="height:220px"><canvas id="chart-rtf-compare"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ── Global Reach Breakdown ── -->
+    <div class="card" style="margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;color:var(--purple);margin-bottom:4px;">Global Reach — Cumulative Since 2014</div>
+      <div style="font-size:11px;color:var(--brown-mid);margin-bottom:14px;">Total of 112,568 people reached · Supply Chain vs Community split available for 2023–2026 from the reach log; pre-2023 historical totals do not have a context split in the data.</div>
+      <div class="grid-3">
+        <div class="stat-card">
+          <div class="big" style="color:var(--orange);">112,568</div>
+          <div class="label">All-time Global Total</div>
+          <div class="desc">Cumulative since 2014</div>
+        </div>
+        <div class="stat-card" style="border-top-color:var(--purple);">
+          <div class="big" style="color:var(--purple);">3,393</div>
+          <div class="label">Supply Chain (2023–2026)</div>
+          <div class="desc">Farm &amp; factory workers, supplier staff</div>
+        </div>
+        <div class="stat-card" style="border-top-color:var(--green);">
+          <div class="big" style="color:var(--green);">18,133</div>
+          <div class="label">Community (2023–2026)</div>
+          <div class="desc">RTF, UKV, church groups, youth &amp; women</div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--brown-mid);opacity:0.65;margin-top:4px;">⚠ Pre-2023 reach (91,042 people) is recorded in annual global totals only — no Supply Chain / Community split is available in the source data for those years.</div>
+    </div>
+
+    <!-- ── Kenya Reach Breakdown ── -->
+    <div class="card" style="margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;color:var(--purple);margin-bottom:4px;">Kenya — Total Reach Breakdown</div>
+      <div style="font-size:11px;color:var(--brown-mid);margin-bottom:14px;">Kenya all-time reach: 67,520 (historical totals 2014–2026). The Supply Chain / Community split is available from the reach log sessions (2023–2026).</div>
+      <div class="grid-3">
+        <div class="stat-card">
+          <div class="big" style="color:var(--orange);">67,520</div>
+          <div class="label">Kenya All-time Total</div>
+          <div class="desc">Cumulative since 2014</div>
+        </div>
+        <div class="stat-card" style="border-top-color:var(--purple);">
+          <div class="big" style="color:var(--purple);">1,174</div>
+          <div class="label">Supply Chain (2023–2026)</div>
+          <div class="desc">Tea farmers, supply chain workers</div>
+        </div>
+        <div class="stat-card" style="border-top-color:var(--green);">
+          <div class="big" style="color:var(--green);">15,373</div>
+          <div class="label">Community (2023–2026)</div>
+          <div class="desc">UKV, RTF, WCW, Solania programmes</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 2026 Metrics ── -->
+    <div class="card" style="margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;color:var(--purple);margin-bottom:4px;">2026 Reach — Year-to-Date</div>
+      <div style="font-size:11px;color:var(--brown-mid);margin-bottom:14px;">All sessions recorded in the reach log for 2026 · sourced from tracker</div>
+      <div class="grid-3">
+        <div class="stat-card">
+          <div class="big" style="color:var(--orange);">1,285</div>
+          <div class="label">2026 Global Total</div>
+          <div class="desc">All countries, all contexts YTD</div>
+        </div>
+        <div class="stat-card" style="border-top-color:var(--purple);">
+          <div class="big" style="color:var(--purple);">279</div>
+          <div class="label">2026 Supply Chain</div>
+          <div class="desc">Brazil, India, Kenya, Rwanda</div>
+        </div>
+        <div class="stat-card" style="border-top-color:var(--green);">
+          <div class="big" style="color:var(--green);">1,006</div>
+          <div class="label">2026 Community</div>
+          <div class="desc">South Africa, Kenya, RTF pilots</div>
+        </div>
       </div>
     </div>
 
@@ -916,18 +1024,8 @@ function renderOverview(){
       scales:axBase(false)}
   });
 
-  // Country bar
-  var cMap={};
-  D.reach.forEach(function(r){cMap[r.country]=(cMap[r.country]||0)+r.n;});
-  // Adjust Kenya from historical data
-  cMap['Kenya']=g.kenya.reduce((a,b)=>a+b,0);
-  var cArr=Object.entries(cMap).sort(function(a,b){return b[1]-a[1];}).slice(0,8);
-  var cL=cArr.map(function(e){return e[0];}),cV=cArr.map(function(e){return e[1];});
-  dc('chart-country-bar');
-  CH['chart-country-bar']=new Chart(el('chart-country-bar'),{type:'bar',
-    data:{labels:cL,datasets:[{data:cV,backgroundColor:cL.map(function(_,i){return i%2===0?COA:CPA;}),borderRadius:6}]},
-    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:TT},scales:axBase(false)}
-  });
+  // Country bar — replaced by static table in the HTML
+  // (All-time Cumulative Reach by Country is now a static table sourced from the tracker)
 
   // 2026 chart
   var yr26=D.reach.filter(function(r){return r.yr===2026;});
@@ -1157,6 +1255,25 @@ function renderRTF(){
     cH+='<div class="rtf-card" style="--c:'+c.color+'"><div class="rtf-flag">'+c.flag+'</div><div class="rtf-country">'+c.country+'</div><div class="rtf-num">'+(c.reach?fmt(c.reach):'—')+'</div><div class="rtf-sub">people reached</div><div class="rtf-detail">'+c.classes+' classes</div><div class="rtf-bar-wrap"><div class="rtf-bar-fill" style="width:'+pct+'%"></div></div></div>';
   });
   el('rtf-country-cards').innerHTML=cH;
+
+  // Kenya delivery breakdown chart (from tracker)
+  dc('chart-rtf-kenya');
+  CH['chart-rtf-kenya']=new Chart(el('chart-rtf-kenya'),{type:'doughnut',
+    data:{labels:['Direct Delivery — Community','Direct Delivery — Partner Org','New Established Trainer'],
+          datasets:[{data:[604,245,46],backgroundColor:[CG,CP,CO],borderWidth:0,hoverOffset:4}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',
+      plugins:{legend:{position:'bottom',labels:{font:{family:'Poppins',size:10},boxWidth:10}},tooltip:TT}}
+  });
+
+  // Country comparison
+  dc('chart-rtf-compare');
+  var rActive=r.filter(function(c){return c.reach>0;});
+  CH['chart-rtf-compare']=new Chart(el('chart-rtf-compare'),{type:'bar',
+    data:{labels:rActive.map(function(c){return c.country;}),
+          datasets:[{data:rActive.map(function(c){return c.reach;}),
+            backgroundColor:rActive.map(function(c){return c.color;}),borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:TT},scales:axBase(false)}
+  });
 }
 
 // ═══════════════════════════════════════════════════
