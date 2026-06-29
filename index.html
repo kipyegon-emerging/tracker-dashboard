@@ -6,105 +6,71 @@
 <title>Emerging Leaders — Global Impact & Projects Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.min.js"></script>
 <style>
 :root {
-  --orange: #e8820c;
-  --orange-soft: rgba(232,130,12,0.12);
-  --orange-mid: rgba(232,130,12,0.5);
-  --purple: #9b1c5a;
-  --purple-soft: rgba(155,28,90,0.10);
-  --brown: #1e0e04;
-  --brown-mid: #5c3520;
-  --brown-light: #f9f3ee;
-  --green: #1e7e44;
-  --green-soft: rgba(30,126,68,0.12);
-  --white: #ffffff;
+  /* EL Brand Palette */
+  --orange: #f39200;
+  --orange-soft: rgba(243,146,0,0.12);
+  --orange-mid: rgba(243,146,0,0.5);
+  --purple: #a3195b;
+  --purple-soft: rgba(163,25,91,0.10);
+  --brown: #2e0c1e;
+  --brown-mid: #2a2829;
+  --brown-light: #e0e0dc;
+  --green: #a3195b;
+  --green-soft: rgba(163,25,91,0.12);
+  --blush: #e9b7ae;
+  --white: #fefefe;
   --card-radius: 14px;
-  --shadow: 0 2px 16px rgba(30,14,4,0.09);
-  --shadow-hover: 0 8px 28px rgba(30,14,4,0.15);
+  --shadow: 0 2px 16px rgba(46,12,30,0.09);
+  --shadow-hover: 0 8px 28px rgba(46,12,30,0.15);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:#f3ede6;font-family:'Poppins',sans-serif;color:var(--brown);min-height:100vh;}
+body{background:#e0e0dc;font-family:'Poppins',sans-serif;color:var(--brown);min-height:100vh;}
 
-/* ─── HEADER ─── */
-.header{
-  background:var(--brown);
-  padding:32px 40px 28px;
-  position:relative;overflow:hidden;
-}
-.header::after{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(ellipse at 90% 30%,rgba(232,130,12,0.22) 0%,transparent 55%),
-             radial-gradient(ellipse at 5% 90%,rgba(155,28,90,0.2) 0%,transparent 50%);
-}
+.header{background:var(--brown);padding:32px 40px 28px;position:relative;overflow:hidden;}
+.header::after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 90% 30%,rgba(243,146,0,0.22) 0%,transparent 55%),radial-gradient(ellipse at 5% 90%,rgba(163,25,91,0.2) 0%,transparent 50%);}
 .header-inner{position:relative;max-width:1280px;margin:0 auto;}
 .header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;}
 .brand{display:flex;flex-direction:column;gap:6px;}
-.brand-eyebrow{
-  display:inline-flex;align-items:center;gap:8px;
-  font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;
-  color:rgba(255,255,255,0.45);
-}
+.brand-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.45);}
 .live-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;animation:blink 2s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
 .brand h1{font-family:'Poppins',sans-serif;font-size:clamp(24px,3.5vw,42px);font-weight:900;color:#fff;line-height:1.1;}
 .brand h1 em{color:var(--orange);font-style:normal;}
 .brand p{font-size:12px;color:rgba(255,255,255,0.45);max-width:500px;line-height:1.7;margin-top:6px;}
-.header-kpis{
-  display:flex;gap:24px;align-items:center;flex-wrap:wrap;
-  margin-top:28px;padding-top:24px;
-  border-top:1px solid rgba(255,255,255,0.1);
-}
+.header-kpis{display:flex;gap:24px;align-items:center;flex-wrap:wrap;margin-top:28px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.1);}
 .kpi{text-align:left;}
 .kpi .num{font-family:'Poppins',sans-serif;font-size:34px;font-weight:900;color:var(--orange);line-height:1;}
 .kpi .lbl{font-size:10px;font-weight:500;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-top:3px;}
 .kpi-div{width:1px;background:rgba(255,255,255,0.1);align-self:stretch;min-height:34px;}
-.refresh-btn{
-  display:inline-flex;align-items:center;gap:7px;
-  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);
-  color:rgba(255,255,255,0.7);font-family:'Poppins',sans-serif;font-size:11px;
-  font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:8px 16px;
-  border-radius:7px;cursor:pointer;transition:all 0.2s;
-}
+.refresh-btn{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.7);font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:8px 16px;border-radius:7px;cursor:pointer;transition:all 0.2s;}
 .refresh-btn:hover{background:rgba(255,255,255,0.2);}
 .refresh-btn svg{transition:transform 0.6s;}
 .spin{animation:spin360 0.7s linear infinite;}
 @keyframes spin360{to{transform:rotate(360deg);}}
 .data-sources{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
-.ds-badge{
-  display:inline-flex;align-items:center;gap:5px;
-  font-size:10px;font-weight:600;letter-spacing:0.5px;
-  padding:3px 10px;border-radius:4px;
-  background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);
-  color:rgba(255,255,255,0.45);
-}
+.ds-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;letter-spacing:0.5px;padding:3px 10px;border-radius:4px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.45);}
 .ds-badge.live{color:#4ade80;border-color:rgba(74,222,128,0.3);background:rgba(74,222,128,0.07);}
 
-/* ─── NAV ─── */
-.nav-wrap{background:var(--white);border-bottom:1px solid rgba(30,14,4,0.08);position:sticky;top:0;z-index:100;}
+.nav-wrap{background:var(--white);border-bottom:1px solid rgba(46,12,30,0.08);position:sticky;top:0;z-index:100;}
 .nav{max-width:1280px;margin:0 auto;padding:0 40px;display:flex;gap:0;overflow-x:auto;}
-.nav-tab{
-  padding:14px 20px;font-size:13px;font-weight:500;color:var(--brown-mid);
-  cursor:pointer;border:none;background:transparent;font-family:'Poppins',sans-serif;
-  border-bottom:3px solid transparent;transition:all 0.2s;white-space:nowrap;
-  display:flex;align-items:center;gap:7px;
-}
+.nav-tab{padding:14px 20px;font-size:13px;font-weight:500;color:var(--brown-mid);cursor:pointer;border:none;background:transparent;font-family:'Poppins',sans-serif;border-bottom:3px solid transparent;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:7px;}
 .nav-tab.active{color:var(--purple);border-bottom-color:var(--orange);font-weight:700;}
 .nav-tab:hover:not(.active){color:var(--brown);background:var(--brown-light);}
 .nav-tab .tab-icon{width:15px;height:15px;stroke-width:2;flex-shrink:0;}
 
-/* ─── MAIN CONTENT ─── */
 .main{max-width:1280px;margin:0 auto;padding:28px 40px 60px;}
 .panel{display:none;}
 .panel.active{display:block;}
 
-/* ─── SECTION HEADER ─── */
 .section-header{margin-bottom:20px;}
 .section-header h2{font-family:'Poppins',sans-serif;font-size:22px;font-weight:700;color:var(--brown);}
 .section-header p{font-size:12px;color:var(--brown-mid);margin-top:4px;opacity:0.75;}
 
-/* ─── CARDS / GRIDS ─── */
 .grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px;}
 .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
@@ -115,12 +81,7 @@ body{background:#f3ede6;font-family:'Poppins',sans-serif;color:var(--brown);min-
 .card{background:var(--white);border-radius:var(--card-radius);box-shadow:var(--shadow);padding:20px;}
 .card:hover{box-shadow:var(--shadow-hover);}
 
-/* Stat cards */
-.stat-card{
-  background:var(--white);border-radius:var(--card-radius);box-shadow:var(--shadow);
-  padding:20px 18px;border-top:3px solid var(--orange);text-align:center;
-  transition:transform 0.2s,box-shadow 0.2s;
-}
+.stat-card{background:var(--white);border-radius:var(--card-radius);box-shadow:var(--shadow);padding:20px 18px;border-top:3px solid var(--orange);text-align:center;transition:transform 0.2s,box-shadow 0.2s;}
 .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);}
 .stat-card.purple{border-top-color:var(--purple);}
 .stat-card.green{border-top-color:var(--green);}
@@ -130,116 +91,73 @@ body{background:#f3ede6;font-family:'Poppins',sans-serif;color:var(--brown);min-
 .stat-card .label{font-size:10px;font-weight:600;color:var(--brown-mid);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;}
 .stat-card .desc{font-size:11px;color:var(--brown-mid);opacity:0.7;line-height:1.5;}
 
-/* Chart card */
 .chart-card{background:var(--white);border-radius:var(--card-radius);box-shadow:var(--shadow);padding:22px 20px;}
 .chart-card h3{font-size:14px;font-weight:700;color:var(--purple);margin-bottom:2px;}
 .chart-card .sub{font-size:11px;color:var(--brown-mid);opacity:0.65;margin-bottom:16px;}
 .chart-wrap{position:relative;}
 
-/* Pills */
 .pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;}
-.pill-done{background:rgba(30,126,68,0.12);color:var(--green);}
-.pill-prog{background:var(--orange-soft);color:#b45309;}
+.pill-done{background:rgba(163,25,91,0.12);color:var(--green);}
+.pill-prog{background:var(--orange-soft);color:var(--brown-mid);}
 .pill-ns{background:rgba(107,114,128,0.1);color:#6b7280;}
 .pill-community{background:var(--purple-soft);color:var(--purple);}
-.pill-supply{background:var(--orange-soft);color:#b45309;}
+.pill-supply{background:var(--orange-soft);color:var(--brown-mid);}
 
-/* ─── REACH LOG TABLE ─── */
 .table-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:12px;}
-thead th{
-  font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--brown-mid);
-  text-align:left;padding:10px 14px 12px;border-bottom:2px solid rgba(30,14,4,0.08);
-  font-weight:600;white-space:nowrap;
-}
-tbody td{padding:10px 14px;border-bottom:1px solid rgba(30,14,4,0.05);color:var(--brown);vertical-align:middle;}
-tbody tr:hover td{background:rgba(232,130,12,0.04);}
+thead th{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--brown-mid);text-align:left;padding:10px 14px 12px;border-bottom:2px solid rgba(46,12,30,0.08);font-weight:600;white-space:nowrap;}
+tbody td{padding:10px 14px;border-bottom:1px solid rgba(46,12,30,0.05);color:var(--brown);vertical-align:middle;}
+tbody tr:hover td{background:rgba(243,146,0,0.04);}
 tbody tr:last-child td{border-bottom:none;}
 
-/* Filter bar */
 .filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;}
-.filter-bar input,.filter-bar select{
-  padding:8px 14px;border:1.5px solid rgba(30,14,4,0.12);border-radius:8px;
-  font-family:'Poppins',sans-serif;font-size:12px;color:var(--brown);background:var(--white);
-  outline:none;transition:border-color 0.2s;
-}
+.filter-bar input,.filter-bar select{padding:8px 14px;border:1.5px solid rgba(46,12,30,0.12);border-radius:8px;font-family:'Poppins',sans-serif;font-size:12px;color:var(--brown);background:var(--white);outline:none;transition:border-color 0.2s;}
 .filter-bar input:focus,.filter-bar select:focus{border-color:var(--orange);}
 .filter-bar input{min-width:220px;}
 .filter-label{font-size:11px;font-weight:600;color:var(--brown-mid);text-transform:uppercase;letter-spacing:0.5px;}
 
-/* ─── PROJECT TRACKER ─── */
-.proj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
-.proj-card{
-  background:var(--white);border-radius:var(--card-radius);box-shadow:var(--shadow);
-  padding:20px;border-left:4px solid var(--orange);transition:all 0.2s;
-}
-.proj-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);}
-.proj-card.supply{border-left-color:var(--purple);}
-.proj-card.community{border-left-color:var(--green);}
-.proj-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px;}
-.proj-name{font-size:13px;font-weight:700;color:var(--brown);line-height:1.35;}
-.proj-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center;}
-.proj-loc{font-size:11px;color:var(--brown-mid);display:flex;align-items:center;gap:4px;}
-.proj-funder{font-size:10px;color:var(--brown-mid);opacity:0.6;}
-.proj-team{font-size:11px;color:var(--purple);font-weight:500;}
-.progress-section{margin-top:12px;}
-.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
-.prog-label{font-size:10px;font-weight:600;color:var(--brown-mid);text-transform:uppercase;letter-spacing:0.5px;}
-.prog-pct{font-size:12px;font-weight:700;color:var(--orange);}
-.prog-track{height:7px;background:rgba(30,14,4,0.08);border-radius:99px;overflow:hidden;}
+/* Project Tracker */
+.proj-group-card{background:var(--white);border-radius:var(--card-radius);box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden;}
+.proj-group-header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-left:4px solid var(--orange);cursor:pointer;transition:background 0.2s;}
+.proj-group-header:hover{background:var(--brown-light);}
+.proj-group-header.supply{border-left-color:var(--purple);}
+.proj-group-header.community{border-left-color:var(--green);}
+.proj-group-title{font-size:14px;font-weight:700;color:var(--brown);}
+.proj-group-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.proj-group-expand{font-size:11px;color:var(--purple);font-weight:600;display:flex;align-items:center;gap:5px;}
+.proj-countries-wrap{display:none;padding:0 22px 18px;}
+.proj-countries-wrap.open{display:block;}
+.proj-country-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;}
+.proj-country-item{background:var(--brown-light);border-radius:10px;padding:14px 16px;}
+.proj-country-name{font-size:12px;font-weight:700;color:var(--brown);margin-bottom:6px;}
+.proj-country-detail{font-size:11px;color:var(--brown-mid);line-height:1.6;}
+.prog-track{height:7px;background:rgba(46,12,30,0.08);border-radius:99px;overflow:hidden;margin-top:6px;}
 .prog-fill{height:100%;border-radius:99px;background:var(--orange);transition:width 1s ease;}
 .prog-fill.supply{background:var(--purple);}
 .prog-fill.community{background:var(--green);}
-.proj-targets{display:flex;gap:14px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(30,14,4,0.06);}
-.target-item{text-align:center;}
-.target-num{font-size:16px;font-weight:800;color:var(--brown);}
-.target-lbl{font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:var(--brown-mid);opacity:0.6;}
+.proj-loc{font-size:11px;color:var(--brown-mid);display:flex;align-items:center;gap:4px;}
+.proj-funder{font-size:10px;color:var(--brown-mid);opacity:0.6;}
 
-/* ─── REACH LOG (detail per class) ─── */
-.year-badge{
-  display:inline-block;padding:2px 10px;border-radius:4px;
-  font-size:10px;font-weight:700;letter-spacing:1px;
-  background:var(--orange-soft);color:#b45309;
-}
-.country-flag{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;}
-.trainer-tag{font-size:11px;color:var(--purple);font-weight:500;}
-.sector-icon{display:inline-flex;align-items:center;gap:4px;font-size:11px;}
-.impact-yes{color:var(--green);font-weight:700;font-size:11px;}
-.impact-no{color:#9ca3af;font-size:11px;}
-
-/* ─── RTF CARDS ─── */
 .rtf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
-.rtf-card{
-  background:var(--white);border-radius:var(--card-radius);box-shadow:var(--shadow);
-  padding:22px 18px;text-align:center;border-top:4px solid var(--c,var(--orange));
-}
+.rtf-card{background:var(--white);border-radius:var(--card-radius);box-shadow:var(--shadow);padding:22px 18px;text-align:center;border-top:4px solid var(--c,var(--orange));}
 .rtf-flag{font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.5);margin-bottom:6px;background:rgba(255,255,255,0.1);display:inline-block;padding:3px 8px;border-radius:4px;}
 .rtf-country{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--c,var(--orange));margin-bottom:10px;}
 .rtf-num{font-family:'Poppins',sans-serif;font-size:44px;font-weight:900;color:var(--brown);line-height:1;}
 .rtf-sub{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--brown-mid);opacity:0.55;margin-bottom:8px;}
 .rtf-detail{font-size:11px;color:var(--brown-mid);}
-.rtf-bar-wrap{height:4px;background:rgba(30,14,4,0.08);border-radius:2px;margin-top:12px;overflow:hidden;}
+.rtf-bar-wrap{height:4px;background:rgba(46,12,30,0.08);border-radius:2px;margin-top:12px;overflow:hidden;}
 .rtf-bar-fill{height:100%;background:var(--c,var(--orange));border-radius:2px;}
 
-/* Gender bars */
 .gender-row{margin-bottom:14px;}
 .g-header{display:flex;justify-content:space-between;margin-bottom:5px;}
 .g-name{font-size:12px;font-weight:600;}
 .g-pct{font-size:11px;color:var(--brown-mid);opacity:0.6;}
-.g-track{height:8px;background:rgba(30,14,4,0.07);border-radius:99px;overflow:hidden;display:flex;}
+.g-track{height:8px;background:rgba(46,12,30,0.07);border-radius:99px;overflow:hidden;display:flex;}
 .g-f{background:var(--orange);height:100%;}
 .g-m{background:var(--purple);height:100%;}
 
-/* ─── DARK BAND ─── */
-.dark-band{
-  background:var(--brown);border-radius:var(--card-radius);padding:28px;margin-bottom:20px;
-  position:relative;overflow:hidden;
-}
-.dark-band::before{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(ellipse at 85% 50%,rgba(232,130,12,0.15) 0%,transparent 55%),
-             radial-gradient(ellipse at 10% 85%,rgba(155,28,90,0.13) 0%,transparent 50%);
-}
+.dark-band{background:var(--brown);border-radius:var(--card-radius);padding:28px;margin-bottom:20px;position:relative;overflow:hidden;}
+.dark-band::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 85% 50%,rgba(243,146,0,0.15) 0%,transparent 55%),radial-gradient(ellipse at 10% 85%,rgba(163,25,91,0.13) 0%,transparent 50%);}
 .dark-band-inner{position:relative;}
 .dark-band h3{font-family:'Poppins',sans-serif;font-size:20px;font-weight:900;color:#fff;margin-bottom:6px;}
 .dark-band p{font-size:12px;color:rgba(255,255,255,0.45);line-height:1.8;max-width:520px;margin-bottom:20px;}
@@ -248,28 +166,23 @@ tbody tr:last-child td{border-bottom:none;}
 .dark-stat .lbl{font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.8px;margin-top:4px;}
 .dark-div{width:1px;background:rgba(255,255,255,0.1);align-self:stretch;min-height:36px;}
 
-/* Insight box */
-.insight{
-  background:linear-gradient(135deg,var(--purple-soft),var(--orange-soft));
-  border-radius:var(--card-radius);padding:20px;margin-bottom:20px;
-  border-left:4px solid var(--purple);display:flex;gap:14px;align-items:flex-start;
-}
+.insight{background:linear-gradient(135deg,var(--purple-soft),var(--orange-soft));border-radius:var(--card-radius);padding:20px;margin-bottom:20px;border-left:4px solid var(--purple);display:flex;gap:14px;align-items:flex-start;}
 .insight-icon{font-size:22px;flex-shrink:0;}
 .insight h4{font-size:13px;font-weight:700;color:var(--purple);margin-bottom:5px;}
 .insight p{font-size:12px;color:var(--brown-mid);line-height:1.75;}
 
-/* ─── FUNDER BARS ─── */
 .funder-list{display:flex;flex-direction:column;gap:10px;}
 .funder-row{display:flex;align-items:center;gap:10px;}
 .funder-name{width:140px;font-size:11px;color:var(--brown-mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;}
-.funder-bar-wrap{flex:1;height:8px;background:rgba(30,14,4,0.07);border-radius:99px;overflow:hidden;}
+.funder-bar-wrap{flex:1;height:8px;background:rgba(46,12,30,0.07);border-radius:99px;overflow:hidden;}
 .funder-bar-fill{height:100%;border-radius:99px;}
-.funder-val{font-size:11px;font-weight:700;color:var(--brown-mid);width:28px;text-align:right;flex-shrink:0;}
+.funder-val{font-size:11px;font-weight:700;color:var(--brown-mid);width:40px;text-align:right;flex-shrink:0;}
 
-/* Divider */
-.divider{border-top:2px dashed rgba(30,14,4,0.09);margin:24px 0;}
+.divider{border-top:2px dashed rgba(46,12,30,0.09);margin:24px 0;}
+.year-badge{display:inline-block;padding:2px 10px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;background:var(--orange-soft);color:var(--brown-mid);}
+.country-flag{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;}
+.trainer-tag{font-size:11px;color:var(--purple);font-weight:500;}
 
-/* ─── ANIMATIONS ─── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .panel.active>*{animation:fadeUp 0.3s ease both;}
 .panel.active>*:nth-child(2){animation-delay:0.04s;}
@@ -277,270 +190,385 @@ tbody tr:last-child td{border-bottom:none;}
 .panel.active>*:nth-child(4){animation-delay:0.12s;}
 .panel.active>*:nth-child(5){animation-delay:0.16s;}
 
-/* ─── RESPONSIVE ─── */
+/* Kenya tab */
+.ke-stat-band{background:linear-gradient(135deg,var(--brown),#3d1a0a);border-radius:var(--card-radius);padding:24px 28px;margin-bottom:20px;color:#fff;}
+.ke-stat-band h3{font-size:18px;font-weight:800;margin-bottom:4px;}
+.ke-stat-band p{font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:16px;}
+.ke-stats{display:flex;gap:24px;flex-wrap:wrap;}
+.ke-stat .num{font-size:32px;font-weight:900;color:var(--orange);}
+.ke-stat .lbl{font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.8px;}
+.ke-div{width:1px;background:rgba(255,255,255,0.1);align-self:stretch;}
+
 @media(max-width:1024px){
   .grid-5,.grid-4{grid-template-columns:repeat(3,1fr);}
   .rtf-grid{grid-template-columns:repeat(2,1fr);}
-  .proj-grid{grid-template-columns:repeat(2,1fr);}
+  .proj-country-list{grid-template-columns:repeat(2,1fr);}
 }
 @media(max-width:768px){
   .header{padding:24px 20px;}
   .main{padding:20px 20px 40px;}
-  .grid-5,.grid-4,.grid-3,.grid-2,.grid-2-1,.grid-1-2,.rtf-grid,.proj-grid{grid-template-columns:1fr;}
+  .grid-5,.grid-4,.grid-3,.grid-2,.grid-2-1,.grid-1-2,.rtf-grid{grid-template-columns:1fr;}
   .nav{padding:0 20px;}
   .header-kpis{gap:16px;}
   .kpi-div{display:none;}
+  .proj-country-list{grid-template-columns:1fr;}
 }
 </style>
 </head>
 <body>
 
-<!-- ══════════ HEADER ══════════ -->
 <div class="header">
   <div class="header-inner">
     <div class="header-top">
       <div class="brand">
-        <div class="brand-eyebrow">
+        <div class="brand-eyebrow" style="margin-bottom:10px;">
           <span class="live-dot"></span>
-          Emerging Leaders · Impact Intelligence
+          <img src="data:image/png;base64,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" alt="Emerging Leaders" style="height:38px;filter:brightness(0) invert(1);opacity:0.92;">
         </div>
         <h1>Global Reach &amp; <em>Project Dashboard</em></h1>
         <p>Tracking every person trained, every class delivered, and every project across our global community and supply chain programmes.</p>
       </div>
-      <button class="refresh-btn" onclick="refreshAll()">
-        <svg id="refresh-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0019.49 15"/></svg>
-        Refresh Data
-      </button>
+
     </div>
     <div class="header-kpis">
       <div class="kpi"><div class="num" id="kpi-total">112,568</div><div class="lbl">Total Reached (Cumulative since 2014)</div></div>
       <div class="kpi-div"></div>
       <div class="kpi"><div class="num" id="kpi-kenya">67,520</div><div class="lbl">Kenya</div></div>
       <div class="kpi-div"></div>
-      <div class="kpi"><div class="num" id="kpi-countries">20+</div><div class="lbl">Countries</div></div>
-      <div class="kpi-div"></div>
-      <div class="kpi"><div class="num" id="kpi-active">21</div><div class="lbl">Active Projects</div></div>
-      <div class="kpi-div"></div>
-      <div class="kpi"><div class="num" id="kpi-ytd">1,285</div><div class="lbl">2026 YTD</div></div>
+      <div class="kpi"><div class="num" id="kpi-countries">26</div><div class="lbl">Countries</div></div>
     </div>
-    <div class="data-sources" style="margin-top:14px;">
-      <span class="ds-badge" id="sb-global">● Global Reach</span>
-      <span class="ds-badge" id="sb-rtf">● RTF Pilot</span>
-      <span class="ds-badge" id="sb-meal">● MEAL Plan</span>
-      <span style="font-size:10px;color:rgba(255,255,255,0.25);margin-left:4px;" id="refresh-time"></span>
+    <div style="margin-top:12px;display:flex;align-items:center;gap:14px;">
+      <button class="refresh-btn" onclick="refreshAll()">
+        <svg id="refresh-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0019.49 15"/></svg>
+        Refresh Data
+      </button>
+      <span style="font-size:10px;color:rgba(255,255,255,0.25);" id="refresh-time"></span>
     </div>
   </div>
 </div>
 
-<!-- ══════════ NAV TABS ══════════ -->
 <div class="nav-wrap">
   <div class="nav">
-    <button class="nav-tab active" onclick="switchTab('context',this)"><i data-lucide="layers" class="tab-icon"></i>Project Stats &amp; Drilldown</button>
-    <button class="nav-tab" onclick="switchTab('overview',this)"><i data-lucide="globe" class="tab-icon"></i>Overview</button>
+    <button class="nav-tab active" onclick="switchTab('overview',this)"><i data-lucide="globe" class="tab-icon"></i>Overview</button>
+    <button class="nav-tab" onclick="switchTab('kenya',this)"><i data-lucide="map-pin" class="tab-icon"></i>Kenya</button>
     <button class="nav-tab" onclick="switchTab('projects',this)"><i data-lucide="folder-open" class="tab-icon"></i>Projects Tracker</button>
-    <button class="nav-tab" onclick="switchTab('reach-log',this)"><i data-lucide="clipboard-list" class="tab-icon"></i>Reach Log</button>
     <button class="nav-tab" onclick="switchTab('rtf',this)"><i data-lucide="sprout" class="tab-icon"></i>RTF Pilot</button>
-    <button class="nav-tab" onclick="switchTab('trends',this)"><i data-lucide="trending-up" class="tab-icon"></i>Trends</button>
-    <button class="nav-tab" onclick="switchTab('milplan',this)"><i data-lucide="table-2" class="tab-icon"></i>Mil-Plan Tracker</button>
   </div>
 </div>
 
-<!-- ══════════ MAIN ══════════ -->
 <div class="main">
 
-  <!-- ═══ CONTEXT DRILLDOWN (PRIMARY TAB) ═══ -->
-  <div class="panel active" id="panel-context">
-    <div class="section-header">
-      <h2>Project Stats &amp; Context Drilldown</h2>
-      <p>Analyze reach by delivery context and project status · Filter by country, funder, or year</p>
-    </div>
-
-    <div class="grid-4" style="margin-bottom:20px;">
-      <div class="stat-card" style="border-top-color:var(--purple);cursor:pointer;" onclick="setContextFilter('Supply Chain')" id="ctx-sc-card">
-        <div class="big" id="ctx-sc-total" style="color:var(--purple);">0</div>
-        <div class="label">Supply Chain Reached</div>
-        <div class="desc">Farm &amp; factory workers, supplier staff</div>
-      </div>
-      <div class="stat-card" style="border-top-color:var(--green);cursor:pointer;" onclick="setContextFilter('Community')" id="ctx-com-card">
-        <div class="big" id="ctx-com-total" style="color:var(--green);">0</div>
-        <div class="label">Community Reached</div>
-        <div class="desc">UKV, RTF, church groups, youth &amp; women</div>
-      </div>
-      <div class="stat-card purple">
-        <div class="big" id="ctx-active-proj">21</div>
-        <div class="label">Active Projects</div>
-        <div class="desc">Currently in progress globally</div>
-      </div>
-      <div class="stat-card green">
-        <div class="big" id="ctx-done-proj">13</div>
-        <div class="label">Completed Projects</div>
-        <div class="desc">Successfully delivered &amp; closed</div>
-      </div>
-    </div>
-
-    <div class="filter-bar" style="margin-bottom:16px;">
-      <span class="filter-label">Filter:</span>
-      <select id="ctx-context" onchange="filterContext()">
-        <option value="">All Contexts</option>
-        <option value="Supply Chain">Supply Chain</option>
-        <option value="Community">Community</option>
-      </select>
-      <select id="ctx-country" onchange="filterContext()">
-        <option value="">All Countries</option>
-      </select>
-      <select id="ctx-funder" onchange="filterContext()">
-        <option value="">All Funders</option>
-      </select>
-      <select id="ctx-year" onchange="filterContext()">
-        <option value="">All Years</option>
-        <option value="2023">2023</option>
-        <option value="2024">2024</option>
-        <option value="2025">2025</option>
-        <option value="2026">2026</option>
-      </select>
-      <select id="ctx-status" onchange="filterContext()">
-        <option value="">All Statuses</option>
-        <option value="In Progress">In Progress</option>
-        <option value="Closure">Closure</option>
-      </select>
-    </div>
-
-    <div class="grid-2">
-      <div class="chart-card">
-        <h3>Reach by Context — Annual Breakdown</h3>
-        <div class="sub">Supply Chain vs Community reached per year</div>
-        <div class="chart-wrap" style="height:240px"><canvas id="chart-context-bar"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>Project Portfolio Status</h3>
-        <div class="sub">Completion breakdown of all projects</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center;">
-          <div class="chart-wrap" style="height:180px"><canvas id="chart-status-donut-ctx"></canvas></div>
-          <div id="status-legend-ctx" style="font-size:12px;"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-        <div style="font-size:14px;font-weight:700;color:var(--purple);">Detailed Session Log</div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Year</th>
-              <th>Country</th>
-              <th>Partner / Funder</th>
-              <th>Context</th>
-              <th>Sector</th>
-              <th>Trainer(s)</th>
-              <th>People Reached</th>
-            </tr>
-          </thead>
-          <tbody id="ctx-tbody"></tbody>
-        </table>
-      </div>
-      <div id="ctx-summary" style="padding:12px 14px 0;font-size:12px;color:var(--brown-mid);border-top:1px solid rgba(30,14,4,0.07);margin-top:10px;"></div>
-    </div>
-  </div><!-- /context -->
-
   <!-- ═══ OVERVIEW ═══ -->
-  <div class="panel" id="panel-overview">
+  <div class="panel active" id="panel-overview">
     <div class="section-header">
       <h2>Global Impact Overview</h2>
       <p>High-level trends and partner performance summary · Updated <span id="ov-updated">June 2026</span></p>
     </div>
 
-    <div class="grid-2">
-      <div class="chart-card">
-        <h3>Annual Global Reach — 2014 to 2026</h3>
-        <div class="sub">Total people reached each year · Global vs Kenya</div>
-        <div class="chart-wrap" style="height:260px"><canvas id="chart-global-line"></canvas></div>
+    <!-- Top stats -->
+    <div class="grid-4" style="margin-bottom:20px;">
+      <div class="stat-card" style="border-top-color:var(--purple);">
+        <div class="big" id="ov-sc-total" style="color:var(--purple);">0</div>
+        <div class="label">Supply Chain Reached</div>
+        <div class="desc">Farm &amp; factory workers, supplier staff · 2023–2026</div>
       </div>
-      <div class="chart-card">
-        <h3>All-time Cumulative Reach by Country</h3>
-        <div class="sub">Cumulative reach since 2014 · All countries · Sourced from tracker</div>
-        <div class="table-wrap" style="margin-top:10px;">
-          <table>
-            <thead><tr><th>Country</th><th style="text-align:right;">Total Reached</th></tr></thead>
-            <tbody>
-              <tr><td><span class="country-flag">🇰🇪 Kenya</span></td><td style="font-weight:800;color:var(--orange);text-align:right;">67,520</td></tr>
-              <tr><td><span class="country-flag">🇺🇸 USA</span></td><td style="font-weight:700;text-align:right;">1,615</td></tr>
-              <tr><td><span class="country-flag">🇳🇮 Nicaragua</span></td><td style="font-weight:700;text-align:right;">708</td></tr>
-              <tr><td><span class="country-flag">🇷🇼 Rwanda</span></td><td style="font-weight:700;text-align:right;">581</td></tr>
-              <tr><td><span class="country-flag">🇵🇪 Peru</span></td><td style="font-weight:700;text-align:right;">417</td></tr>
-              <tr><td><span class="country-flag">🇲🇼 Malawi</span></td><td style="font-weight:700;text-align:right;">272</td></tr>
-              <tr><td><span class="country-flag">🇿🇦 South Africa</span></td><td style="font-weight:700;text-align:right;">244</td></tr>
-              <tr><td><span class="country-flag">🇬🇧 UK</span></td><td style="font-weight:700;text-align:right;">233</td></tr>
-              <tr><td><span class="country-flag">🇸🇱 Sierra Leone</span></td><td style="font-weight:700;text-align:right;">201</td></tr>
-              <tr><td><span class="country-flag">🇨🇴 Colombia</span></td><td style="font-weight:700;text-align:right;">196</td></tr>
-              <tr><td><span class="country-flag">🇮🇳 India</span></td><td style="font-weight:700;text-align:right;">192</td></tr>
-              <tr><td><span class="country-flag">🇧🇷 Brazil</span></td><td style="font-weight:700;text-align:right;">97</td></tr>
-              <tr><td><span class="country-flag">🇵🇭 Philippines</span></td><td style="font-weight:700;text-align:right;">117</td></tr>
-              <tr><td><span class="country-flag">🇲🇬 Madagascar</span></td><td style="font-weight:700;text-align:right;">43</td></tr>
-              <tr><td><span class="country-flag">🇵🇱 Poland</span></td><td style="font-weight:700;text-align:right;">35</td></tr>
-              <tr><td><span class="country-flag">🇪🇸 Spain</span></td><td style="font-weight:700;text-align:right;">28</td></tr>
-              <tr style="border-top:2px solid rgba(30,14,4,0.12);">
-                <td style="font-weight:800;color:var(--purple);">TOTAL (reach log countries)</td>
-                <td style="font-weight:800;color:var(--purple);text-align:right;">72,499</td>
-              </tr>
-            </tbody>
-          </table>
-          <div style="font-size:10px;color:var(--brown-mid);opacity:0.6;margin-top:8px;">* Kenya figure sourced from historical global data (2014–2026). All other countries from reach log (2023–2026).</div>
-        </div>
+      <div class="stat-card" style="border-top-color:var(--green);">
+        <div class="big" id="ov-com-total" style="color:var(--green);">0</div>
+        <div class="label">Community Reached</div>
+        <div class="desc">UKV, RTF, youth &amp; women · 2023–2026</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="big" id="ov-active-proj">0</div>
+        <div class="label">In Progress Projects</div>
+        <div class="desc">Currently active globally</div>
+      </div>
+      <div class="stat-card green">
+        <div class="big" id="ov-done-proj">0</div>
+        <div class="label">Completed Projects</div>
+        <div class="desc">Successfully delivered &amp; closed</div>
       </div>
     </div>
 
-    <div class="grid-2-1">
+    <!-- World map using mapdata.js country data -->
+    <div class="chart-card" style="margin-bottom:16px;">
+      <h3>Reach by Country — Global Map</h3>
+      <div class="sub">Countries where Emerging Leaders has worked · Hover a country for reach details · All years combined</div>
+      <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;margin-top:14px;">
+        <!-- Map with embedded legend + zoom controls -->
+        <div style="flex:1;min-width:300px;position:relative;" id="world-map-wrap">
+          <div id="world-map" style="width:100%;min-height:400px;background:#dbeafe;border-radius:10px;overflow:hidden;"></div>
+          <!-- Legend overlay on map -->
+          <div style="position:absolute;bottom:12px;left:12px;background:rgba(255,255,255,0.93);border-radius:8px;padding:8px 12px;display:flex;flex-direction:column;gap:5px;box-shadow:0 2px 8px rgba(46,12,30,0.13);pointer-events:none;">
+            <div style="font-size:10px;font-weight:700;color:var(--brown-mid);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Legend</div>
+            <div style="display:flex;align-items:center;gap:6px;"><div style="width:13px;height:9px;border-radius:2px;background:#f39200;flex-shrink:0;"></div><span style="font-size:10px;">SC + Community</span></div>
+            <div style="display:flex;align-items:center;gap:6px;"><div style="width:13px;height:9px;border-radius:2px;background:#a3195b;flex-shrink:0;"></div><span style="font-size:10px;">Community only</span></div>
+            <div style="display:flex;align-items:center;gap:6px;"><div style="width:13px;height:9px;border-radius:2px;background:#d4a853;flex-shrink:0;"></div><span style="font-size:10px;">Supply Chain only</span></div>
+            <div style="display:flex;align-items:center;gap:6px;"><div style="width:13px;height:9px;border-radius:2px;background:#e2d8cf;border:1px solid #ccc;flex-shrink:0;"></div><span style="font-size:10px;">No programmes</span></div>
+          </div>
+          <!-- Zoom controls -->
+          <div style="position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:4px;">
+            <button onclick="mapZoom(1.4)" style="width:30px;height:30px;background:rgba(255,255,255,0.95);border:1px solid rgba(46,12,30,0.15);border-radius:6px;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(46,12,30,0.12);color:var(--brown);">+</button>
+            <button onclick="mapZoom(0.714)" style="width:30px;height:30px;background:rgba(255,255,255,0.95);border:1px solid rgba(46,12,30,0.15);border-radius:6px;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(46,12,30,0.12);color:var(--brown);">−</button>
+            <button onclick="mapReset()" style="width:30px;height:30px;background:rgba(255,255,255,0.95);border:1px solid rgba(46,12,30,0.15);border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(46,12,30,0.12);color:var(--brown);" title="Reset zoom">⌂</button>
+          </div>
+        </div>
+        <!-- Countries Reached list -->
+        <div style="flex:0 0 190px;display:flex;flex-direction:column;gap:0;padding-top:4px;">
+          <div style="font-size:11px;font-weight:700;color:var(--brown-mid);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Countries Reached <span style="font-weight:400;opacity:0.6;">(26)</span></div>
+          <div style="display:flex;flex-direction:column;gap:3px;max-height:420px;overflow-y:auto;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(46,12,30,0.05);"><span style="font-size:11px;">🇰🇪 Kenya</span><strong style="font-size:11px;color:#f39200;">67,520</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(46,12,30,0.05);"><span style="font-size:11px;">🇺🇸 USA</span><strong style="font-size:11px;color:#a3195b;">1,615</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(46,12,30,0.05);"><span style="font-size:11px;">🇳🇮 Nicaragua</span><strong style="font-size:11px;">708</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(46,12,30,0.05);"><span style="font-size:11px;">🇷🇼 Rwanda</span><strong style="font-size:11px;">581</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(46,12,30,0.05);"><span style="font-size:11px;">🇵🇪 Peru</span><strong style="font-size:11px;">417</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(46,12,30,0.05);"><span style="font-size:11px;">🇲🇼 Malawi</span><strong style="font-size:11px;">272</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(46,12,30,0.05);"><span style="font-size:11px;">🇿🇦 South Africa</span><strong style="font-size:11px;">246</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(46,12,30,0.05);"><span style="font-size:11px;">🇬🇧 UK</span><strong style="font-size:11px;">235</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(46,12,30,0.05);"><span style="font-size:11px;">🇸🇱 Sierra Leone</span><strong style="font-size:11px;">196</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(46,12,30,0.05);"><span style="font-size:11px;">🇨🇴 Colombia</span><strong style="font-size:11px;">191</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(46,12,30,0.05);"><span style="font-size:11px;">🇮🇳 India</span><strong style="font-size:11px;">157</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(46,12,30,0.05);"><span style="font-size:11px;">🇵🇭 Philippines</span><strong style="font-size:11px;">117</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(46,12,30,0.05);"><span style="font-size:11px;">🇧🇷 Brazil</span><strong style="font-size:11px;">97</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(46,12,30,0.05);"><span style="font-size:11px;">🇲🇬 Madagascar</span><strong style="font-size:11px;">43</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(46,12,30,0.05);"><span style="font-size:11px;">🇵🇱 Poland</span><strong style="font-size:11px;">35</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;"><span style="font-size:11px;">🇪🇸 Spain</span><strong style="font-size:11px;">28</strong></div>
+          </div>
+          <div style="font-size:10px;color:var(--brown-mid);opacity:0.55;margin-top:8px;">Scroll to see all · All years</div>
+        </div>
+      </div>
+    </div>
+    <!-- Tooltip lives at body level so nothing clips it -->
+    <div id="map-tooltip" style="display:none;position:fixed;background:rgba(46,12,30,0.95);color:#fff;border-radius:12px;padding:14px 18px;font-family:Poppins,sans-serif;min-width:200px;pointer-events:none;z-index:99999;box-shadow:0 10px 32px rgba(46,12,30,0.35);transition:opacity 0.1s;">
+      <div id="map-tt-flag" style="font-size:24px;margin-bottom:4px;line-height:1;"></div>
+      <div id="map-tt-name" style="font-size:13px;font-weight:800;color:#fff;margin-bottom:4px;"></div>
+      <div id="map-tt-reach" style="font-size:22px;font-weight:900;color:#f39200;line-height:1.1;margin-bottom:6px;"></div>
+      <div id="map-tt-context" style="font-size:11px;color:rgba(255,255,255,0.6);line-height:1.7;"></div>
+    </div>
+
+    <!-- Annual Global Reach — 2014 to 2026 -->
+    <div class="grid-2" style="margin-bottom:16px;">
       <div class="chart-card">
-        <h3>2026 YTD Reach by Country</h3>
-        <div class="sub">January – June 2026 · From the tracker</div>
-        <div class="chart-wrap" style="height:240px"><canvas id="chart-2026"></canvas></div>
+        <h3>Annual Global Reach — 2014 to 2026</h3>
+        <div class="sub">Total people reached each year · Global vs Kenya · From tracker</div>
+        <div class="chart-wrap" style="height:260px"><canvas id="chart-global-line"></canvas></div>
       </div>
       <div class="chart-card">
         <h3>Key Partners by Reach</h3>
-        <div class="sub">Countries reached per major partner</div>
+        <div class="sub">Total reach per major partner · 2023–2026</div>
         <div id="funder-list" class="funder-list" style="margin-top:8px;"></div>
       </div>
     </div>
 
-    <!-- ── PARTNER BY REACH SUMMARY ─────────────────────────────── -->
-    <div class="card" style="margin-bottom:16px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-        <div>
-          <div style="font-size:14px;font-weight:700;color:var(--purple);">Partner Reach Summary — 2023 to 2026</div>
-          <div style="font-size:11px;color:var(--brown-mid);margin-top:2px;">Total people reached per partner across all active years</div>
-        </div>
+    <!-- 2026 YTD bar + Context breakdown -->
+    <div class="grid-2" style="margin-bottom:16px;">
+      <div class="chart-card">
+        <h3>2026 YTD Reach by Country</h3>
+        <div class="sub">January – June 2026 · Total: 1,285 people</div>
+        <div class="chart-wrap" style="height:240px"><canvas id="chart-2026-bar"></canvas></div>
       </div>
+      <div class="chart-card">
+        <h3>Reach by Context — Annual Breakdown</h3>
+        <div class="sub">Supply Chain vs Community reached per year · 2023–2026</div>
+        <div class="chart-wrap" style="height:240px"><canvas id="chart-context-bar"></canvas></div>
+      </div>
+    </div>
+
+  </div><!-- /overview -->
+
+  <!-- ═══ KENYA ═══ -->
+  <div class="panel" id="panel-kenya">
+    <div class="section-header">
+      <h2>Kenya — Programme Statistics</h2>
+      <p>Detailed Kenya reach breakdown · Community and Supply Chain · 2014–2026</p>
+    </div>
+
+    <div class="ke-stat-band">
+      <h3>Kenya at a Glance</h3>
+      <p>All-time totals from the global tracker · Supply Chain / Community split available from 2023</p>
+      <div class="ke-stats">
+        <div class="ke-stat"><div class="num">67,520</div><div class="lbl">All-time Total Reached</div></div>
+        <div class="ke-div"></div>
+        <div class="ke-stat"><div class="num" id="ke-sc">0</div><div class="lbl">Supply Chain (2023–2026)</div></div>
+        <div class="ke-div"></div>
+        <div class="ke-stat"><div class="num" id="ke-com">0</div><div class="lbl">Community (2023–2026)</div></div>
+        <div class="ke-div"></div>
+        <div class="ke-stat"><div class="num">943</div><div class="lbl">2026 YTD Reached</div></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="chart-card">
+        <h3>Kenya Annual Reach — 2014 to 2026</h3>
+        <div class="sub">Total reach per year · From Total Reach Globally tracker · Pre-2023 split not available</div>
+        <div class="chart-wrap" style="height:260px"><canvas id="chart-kenya-annual"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Kenya All-Time Reach by Context</h3>
+        <div class="sub">Cumulative total · Community and Supply Chain · 2014–2026 · Total: 67,520</div>
+        <div class="table-wrap" style="margin-top:10px;">
+          <table>
+            <thead><tr><th>Period</th><th>Context</th><th style="text-align:right;">Reach</th></tr></thead>
+            <tbody>
+              <tr><td>2014–2022</td><td><span class="pill pill-community">All Contexts</span></td><td style="font-weight:700;color:var(--brown-mid);text-align:right;">50,973</td></tr>
+              <tr><td>2023–2026</td><td><span class="pill pill-community">Community</span></td><td style="font-weight:700;color:var(--green);text-align:right;">15,373</td></tr>
+              <tr><td>2023–2026</td><td><span class="pill pill-supply">Supply Chain</span></td><td style="font-weight:700;color:var(--purple);text-align:right;">1,174</td></tr>
+              <tr style="border-top:2px solid rgba(46,12,30,0.1);"><td colspan="2" style="font-weight:700;">All-Time Total</td><td style="font-weight:800;color:var(--orange);text-align:right;">67,520</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="chart-wrap" style="height:160px;margin-top:14px;"><canvas id="chart-kenya-delivery"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Kenya annual reach table -->
+    <div class="card" style="margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;color:var(--purple);margin-bottom:4px;">Kenya Annual Reach by Context</div>
+      <div style="font-size:11px;color:var(--brown-mid);margin-bottom:14px;">Sourced from Total Reach — Globally tracker. Supply Chain / Community split available from 2022–2026.</div>
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr>
-              <th>Partner / Funder</th>
-              <th>2023</th>
-              <th>2024</th>
-              <th>2025</th>
-              <th>2026</th>
-              <th>Total Reached</th>
-            </tr>
-          </thead>
-          <tbody id="partner-reach-tbody"></tbody>
+          <thead><tr><th>Year</th><th>Community</th><th>Supply Chain</th><th>Total</th></tr></thead>
+          <tbody>
+            <tr><td>2023</td><td style="color:var(--green);font-weight:700;">8,355</td><td style="color:var(--purple);font-weight:700;">62</td><td style="font-weight:800;color:var(--orange);">8,417</td></tr>
+            <tr><td>2024</td><td style="color:var(--green);font-weight:700;">2,975</td><td style="color:var(--purple);font-weight:700;">147</td><td style="font-weight:800;color:var(--orange);">3,122</td></tr>
+            <tr><td>2025</td><td style="color:var(--green);font-weight:700;">3,148</td><td style="color:var(--purple);font-weight:700;">917</td><td style="font-weight:800;color:var(--orange);">4,065</td></tr>
+            <tr><td>2026 (YTD)</td><td style="color:var(--green);font-weight:700;">895</td><td style="color:var(--purple);font-weight:700;">48</td><td style="font-weight:800;color:var(--orange);">943</td></tr>
+            <tr style="border-top:2px solid rgba(46,12,30,0.12);"><td style="font-weight:800;">Total 2023–2026</td><td style="font-weight:800;color:var(--green);">15,373</td><td style="font-weight:800;color:var(--purple);">1,174</td><td style="font-weight:900;color:var(--orange);">16,547</td></tr>
+          </tbody>
         </table>
       </div>
     </div>
-  </div><!-- /overview -->
+
+    <!-- Gender breakdown Kenya -->
+    <div class="grid-2">
+      <div class="chart-card">
+        <h3>Kenya — Gender Breakdown (2026 YTD)</h3>
+        <div class="sub">From RTF Pilot Tracker · Kenya sessions 2026</div>
+        <div style="margin-top:16px;">
+          <div class="gender-row">
+            <div class="g-header"><span class="g-name" style="color:var(--orange);">Female</span><span class="g-pct">551 · 61.6%</span></div>
+            <div class="g-track"><div class="g-f" style="width:61.6%"></div><div class="g-m" style="width:38.4%"></div></div>
+          </div>
+          <div class="gender-row">
+            <div class="g-header"><span class="g-name" style="color:var(--purple);">Male</span><span class="g-pct">344 · 38.4%</span></div>
+            <div class="g-track"><div class="g-m" style="width:38.4%"></div></div>
+          </div>
+        </div>
+        <div style="margin-top:14px;font-size:11px;color:var(--brown-mid);">Total participants with gender recorded: <strong>895</strong></div>
+      </div>
+      <div class="chart-card">
+        <h3>Kenya — Counties Reached </h3>
+        <div class="sub">From RTF Pilot Tracker — programme locations</div>
+        <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;"><div style="width:10px;height:10px;border-radius:50%;background:var(--orange);flex-shrink:0;"></div><span style="font-size:12px;font-weight:600;">Nairobi (NRB)</span></div>
+          <div style="display:flex;align-items:center;gap:10px;"><div style="width:10px;height:10px;border-radius:50%;background:var(--purple);flex-shrink:0;"></div><span style="font-size:12px;font-weight:600;">Makueni (MKN)</span></div>
+          <div style="display:flex;align-items:center;gap:10px;"><div style="width:10px;height:10px;border-radius:50%;background:var(--green);flex-shrink:0;"></div><span style="font-size:12px;font-weight:600;">Nyamira / Kisii (NYM / KSI)</span></div>
+          <div style="display:flex;align-items:center;gap:10px;"><div style="width:10px;height:10px;border-radius:50%;background:#d97706;flex-shrink:0;"></div><span style="font-size:12px;font-weight:600;">Embu (EMB)</span></div>
+          <div style="display:flex;align-items:center;gap:10px;"><div style="width:10px;height:10px;border-radius:50%;background:#6b7280;flex-shrink:0;"></div><span style="font-size:12px;font-weight:600;">Murang'a</span></div>
+          <div style="display:flex;align-items:center;gap:10px;"><div style="width:10px;height:10px;border-radius:50%;background:#a3195b;flex-shrink:0;"></div><span style="font-size:12px;font-weight:600;">Naivasha (NVS)</span></div>
+        </div>
+      </div>
+    </div>
+    <!-- Age & Gender Demographic — from CCBA 2026 Numbers -->
+    <div class="chart-card" style="margin-bottom:16px;">
+      <h3>Age &amp; Gender Demographic — Kenya 2026</h3>
+      <div class="sub">Source: CCBA 2026 Numbers · Cumulative to end of May 2026 · Total: 1,283 participants</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:18px;align-items:start;">
+        <!-- Age breakdown -->
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--brown-mid);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Age Groups</div>
+          <div style="margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+              <span style="font-size:12px;font-weight:600;color:var(--orange);">Under 35</span>
+              <span style="font-size:12px;font-weight:800;color:var(--orange);">1,040 · 81.1%</span>
+            </div>
+            <div style="height:10px;background:rgba(46,12,30,0.07);border-radius:99px;overflow:hidden;">
+              <div style="width:81.1%;height:100%;background:var(--orange);border-radius:99px;"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+              <span style="font-size:12px;font-weight:600;color:var(--purple);">Over 35</span>
+              <span style="font-size:12px;font-weight:800;color:var(--purple);">243 · 18.9%</span>
+            </div>
+            <div style="height:10px;background:rgba(46,12,30,0.07);border-radius:99px;overflow:hidden;">
+              <div style="width:18.9%;height:100%;background:var(--purple);border-radius:99px;"></div>
+            </div>
+          </div>
+          <div style="margin-top:14px;font-size:10px;color:var(--brown-mid);opacity:0.65;line-height:1.7;">Strong youth focus — over 4 in 5 participants are under 35, aligning with the programme's youth empowerment mandate.</div>
+        </div>
+        <!-- Gender breakdown -->
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--brown-mid);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Gender</div>
+          <div style="margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+              <span style="font-size:12px;font-weight:600;color:var(--orange);">Female</span>
+              <span style="font-size:12px;font-weight:800;color:var(--orange);">798 · 62.2%</span>
+            </div>
+            <div style="height:10px;background:rgba(46,12,30,0.07);border-radius:99px;overflow:hidden;">
+              <div style="width:62.2%;height:100%;background:var(--orange);border-radius:99px;"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+              <span style="font-size:12px;font-weight:600;color:var(--purple);">Male</span>
+              <span style="font-size:12px;font-weight:800;color:var(--purple);">485 · 37.8%</span>
+            </div>
+            <div style="height:10px;background:rgba(46,12,30,0.07);border-radius:99px;overflow:hidden;">
+              <div style="width:37.8%;height:100%;background:var(--purple);border-radius:99px;"></div>
+            </div>
+          </div>
+          <div style="margin-top:14px;font-size:10px;color:var(--brown-mid);opacity:0.65;line-height:1.7;">Women make up 62% of participants, exceeding the 60% programme target set for 2026.</div>
+        </div>
+      </div>
+      <!-- Location breakdown -->
+      <div style="margin-top:20px;border-top:1px solid rgba(46,12,30,0.08);padding-top:16px;">
+        <div style="font-size:11px;font-weight:700;color:var(--brown-mid);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Reach by Location — End of May 2026</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:120px;background:var(--brown-light);border-radius:8px;padding:12px;text-align:center;border-top:3px solid var(--orange);">
+            <div style="font-size:22px;font-weight:900;color:var(--orange);">594</div>
+            <div style="font-size:10px;font-weight:600;color:var(--brown-mid);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">Nairobi</div>
+          </div>
+          <div style="flex:1;min-width:120px;background:var(--brown-light);border-radius:8px;padding:12px;text-align:center;border-top:3px solid var(--purple);">
+            <div style="font-size:22px;font-weight:900;color:var(--purple);">338</div>
+            <div style="font-size:10px;font-weight:600;color:var(--brown-mid);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">Nyamira / Kisii</div>
+          </div>
+          <div style="flex:1;min-width:120px;background:var(--brown-light);border-radius:8px;padding:12px;text-align:center;border-top:3px solid #a3195b;">
+            <div style="font-size:22px;font-weight:900;color:#a3195b;">164</div>
+            <div style="font-size:10px;font-weight:600;color:var(--brown-mid);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">Embu</div>
+          </div>
+          <div style="flex:1;min-width:120px;background:var(--brown-light);border-radius:8px;padding:12px;text-align:center;border-top:3px solid #d97706;">
+            <div style="font-size:22px;font-weight:900;color:#d97706;">139</div>
+            <div style="font-size:10px;font-weight:600;color:var(--brown-mid);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">Makueni</div>
+          </div>
+          <div style="flex:1;min-width:120px;background:var(--brown-light);border-radius:8px;padding:12px;text-align:center;border-top:3px solid #6b7280;">
+            <div style="font-size:22px;font-weight:900;color:#6b7280;">48</div>
+            <div style="font-size:10px;font-weight:600;color:var(--brown-mid);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">Murang'a</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /kenya -->
 
   <!-- ═══ PROJECTS TRACKER ═══ -->
   <div class="panel" id="panel-projects">
     <div class="section-header">
       <h2>All Projects — Global Tracker</h2>
-      <p>Every active, completed &amp; upcoming project with targets, team leads &amp; progress · 2022–2027</p>
+      <p>Projects grouped by programme name · Expand each row to see all countries · 2022–2027</p>
     </div>
 
     <div class="filter-bar" style="margin-bottom:16px;">
       <span class="filter-label">Filter:</span>
       <input type="text" id="proj-search" placeholder="Project name, country, funder…" oninput="filterProjects()">
+      <select id="proj-year" onchange="filterProjects()">
+        <option value="">All Years</option>
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+        <option value="2026">2026</option>
+        <option value="2027">2027</option>
+      </select>
       <select id="proj-status" onchange="filterProjects()">
         <option value="">All Statuses</option>
         <option value="In Progress">In Progress</option>
@@ -552,91 +580,10 @@ tbody tr:last-child td{border-bottom:none;}
         <option value="Community">Community</option>
         <option value="Supply Chain">Supply Chain</option>
       </select>
-      <select id="proj-view" onchange="toggleProjView()">
-        <option value="cards">Card View</option>
-        <option value="table">Table View</option>
-      </select>
     </div>
 
-    <!-- Card view -->
-    <div id="proj-cards-view">
-      <div class="proj-grid" id="proj-cards"></div>
-    </div>
-
-    <!-- Table view -->
-    <div id="proj-table-view" style="display:none;">
-      <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Project Name</th>
-                <th>Location</th>
-                <th>Partner / Funder</th>
-                <th>Type</th>
-                <th>Team Lead</th>
-                <th>Year / Timeline</th>
-                <th>Target</th>
-                <th>Reached</th>
-                <th>Endline</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="proj-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    <div id="proj-grouped"></div>
   </div><!-- /projects -->
-
-  <!-- ═══ REACH LOG ═══ -->
-  <div class="panel" id="panel-reach-log">
-    <div class="section-header">
-      <h2>Reach Log — Every Class &amp; Training</h2>
-      <p>Detailed record of every training session · 2023 to 2026 global data from tracker</p>
-    </div>
-
-    <div class="filter-bar">
-      <span class="filter-label">Filter:</span>
-      <input type="text" id="reach-search" placeholder="Search country, partner, trainer…" oninput="filterReach()">
-      <select id="reach-year" onchange="filterReach()">
-        <option value="">All Years</option>
-        <option value="2023">2023</option>
-        <option value="2024">2024</option>
-        <option value="2025">2025</option>
-        <option value="2026">2026</option>
-      </select>
-      <select id="reach-type" onchange="filterReach()">
-        <option value="">All Types</option>
-        <option value="community">Community</option>
-        <option value="supply">Supply Chain</option>
-      </select>
-      <select id="reach-country" onchange="filterReach()">
-        <option value="">All Countries</option>
-      </select>
-    </div>
-
-    <div class="card">
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Year</th>
-              <th>Country</th>
-              <th>City / Location</th>
-              <th>Project / Class</th>
-              <th>Trainer(s)</th>
-              <th>Sector / Type</th>
-              <th>People Reached</th>
-              <th>Partner</th>
-            </tr>
-          </thead>
-          <tbody id="reach-tbody"></tbody>
-        </table>
-      </div>
-      <div id="reach-summary" style="padding:12px 14px 0;font-size:12px;color:var(--brown-mid);border-top:1px solid rgba(30,14,4,0.07);margin-top:10px;"></div>
-    </div>
-  </div><!-- /reach-log -->
 
   <!-- ═══ RTF PILOT ═══ -->
   <div class="panel" id="panel-rtf">
@@ -656,16 +603,16 @@ tbody tr:last-child td{border-bottom:none;}
 
     <div class="grid-2">
       <div class="chart-card">
-        <h3>Kenya — Delivery Method Breakdown</h3>
-        <div class="sub">Reach by delivery pathway · From tracker (2026)</div>
+        <h3>Kenya — Delivery Pathway Breakdown</h3>
+        <div class="sub">Reach by delivery pathway · From RTF Pilot Tracker (2026) · Total: 895</div>
         <div class="table-wrap" style="margin-top:10px;">
           <table>
-            <thead><tr><th>Delivery Method</th><th style="text-align:right;">Classes</th><th style="text-align:right;">Reach</th></tr></thead>
+            <thead><tr><th>Delivery Pathway</th><th style="text-align:right;">Classes</th><th style="text-align:right;">Reach</th></tr></thead>
             <tbody>
               <tr><td><span class="pill pill-community">Direct Delivery — Community</span></td><td style="text-align:right;">16</td><td style="font-weight:700;color:var(--green);text-align:right;">604</td></tr>
               <tr><td><span class="pill pill-supply">Direct Delivery — Partner Org</span></td><td style="text-align:right;">6</td><td style="font-weight:700;color:var(--purple);text-align:right;">245</td></tr>
               <tr><td><span class="pill pill-ns">New Established Trainer</span></td><td style="text-align:right;">1</td><td style="font-weight:700;text-align:right;">46</td></tr>
-              <tr style="border-top:2px solid rgba(30,14,4,0.1);"><td style="font-weight:700;">Total</td><td style="font-weight:700;text-align:right;">23</td><td style="font-weight:800;color:var(--orange);text-align:right;">895</td></tr>
+              <tr style="border-top:2px solid rgba(46,12,30,0.1);"><td style="font-weight:700;">Total</td><td style="font-weight:700;text-align:right;">23</td><td style="font-weight:800;color:var(--orange);text-align:right;">895</td></tr>
             </tbody>
           </table>
         </div>
@@ -675,76 +622,6 @@ tbody tr:last-child td{border-bottom:none;}
         <h3>Active Country Comparison</h3>
         <div class="sub">Reach per pilot country so far</div>
         <div class="chart-wrap" style="height:220px"><canvas id="chart-rtf-compare"></canvas></div>
-      </div>
-    </div>
-
-    <!-- ── Global Reach Breakdown ── -->
-    <div class="card" style="margin-bottom:16px;">
-      <div style="font-size:14px;font-weight:700;color:var(--purple);margin-bottom:4px;">Global Reach — Cumulative Since 2014</div>
-      <div style="font-size:11px;color:var(--brown-mid);margin-bottom:14px;">Total of 112,568 people reached · Supply Chain vs Community split available for 2023–2026 from the reach log; pre-2023 historical totals do not have a context split in the data.</div>
-      <div class="grid-3">
-        <div class="stat-card">
-          <div class="big" style="color:var(--orange);">112,568</div>
-          <div class="label">All-time Global Total</div>
-          <div class="desc">Cumulative since 2014</div>
-        </div>
-        <div class="stat-card" style="border-top-color:var(--purple);">
-          <div class="big" style="color:var(--purple);">3,393</div>
-          <div class="label">Supply Chain (2023–2026)</div>
-          <div class="desc">Farm &amp; factory workers, supplier staff</div>
-        </div>
-        <div class="stat-card" style="border-top-color:var(--green);">
-          <div class="big" style="color:var(--green);">18,133</div>
-          <div class="label">Community (2023–2026)</div>
-          <div class="desc">RTF, UKV, church groups, youth &amp; women</div>
-        </div>
-      </div>
-      <div style="font-size:10px;color:var(--brown-mid);opacity:0.65;margin-top:4px;">⚠ Pre-2023 reach (91,042 people) is recorded in annual global totals only — no Supply Chain / Community split is available in the source data for those years.</div>
-    </div>
-
-    <!-- ── Kenya Reach Breakdown ── -->
-    <div class="card" style="margin-bottom:16px;">
-      <div style="font-size:14px;font-weight:700;color:var(--purple);margin-bottom:4px;">Kenya — Total Reach Breakdown</div>
-      <div style="font-size:11px;color:var(--brown-mid);margin-bottom:14px;">Kenya all-time reach: 67,520 (historical totals 2014–2026). The Supply Chain / Community split is available from the reach log sessions (2023–2026).</div>
-      <div class="grid-3">
-        <div class="stat-card">
-          <div class="big" style="color:var(--orange);">67,520</div>
-          <div class="label">Kenya All-time Total</div>
-          <div class="desc">Cumulative since 2014</div>
-        </div>
-        <div class="stat-card" style="border-top-color:var(--purple);">
-          <div class="big" style="color:var(--purple);">1,174</div>
-          <div class="label">Supply Chain (2023–2026)</div>
-          <div class="desc">Tea farmers, supply chain workers</div>
-        </div>
-        <div class="stat-card" style="border-top-color:var(--green);">
-          <div class="big" style="color:var(--green);">15,373</div>
-          <div class="label">Community (2023–2026)</div>
-          <div class="desc">UKV, RTF, WCW, Solania programmes</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── 2026 Metrics ── -->
-    <div class="card" style="margin-bottom:16px;">
-      <div style="font-size:14px;font-weight:700;color:var(--purple);margin-bottom:4px;">2026 Reach — Year-to-Date</div>
-      <div style="font-size:11px;color:var(--brown-mid);margin-bottom:14px;">All sessions recorded in the reach log for 2026 · sourced from tracker</div>
-      <div class="grid-3">
-        <div class="stat-card">
-          <div class="big" style="color:var(--orange);">1,285</div>
-          <div class="label">2026 Global Total</div>
-          <div class="desc">All countries, all contexts YTD</div>
-        </div>
-        <div class="stat-card" style="border-top-color:var(--purple);">
-          <div class="big" style="color:var(--purple);">279</div>
-          <div class="label">2026 Supply Chain</div>
-          <div class="desc">Brazil, India, Kenya, Rwanda</div>
-        </div>
-        <div class="stat-card" style="border-top-color:var(--green);">
-          <div class="big" style="color:var(--green);">1,006</div>
-          <div class="label">2026 Community</div>
-          <div class="desc">South Africa, Kenya, RTF pilots</div>
-        </div>
       </div>
     </div>
 
@@ -763,205 +640,118 @@ tbody tr:last-child td{border-bottom:none;}
     </div>
   </div><!-- /rtf -->
 
-  <!-- ═══ TRENDS ═══ -->
-  <div class="panel" id="panel-trends">
-    <div class="section-header">
-      <h2>Global Trends &amp; Growth</h2>
-      <p>Deep dive into year-on-year growth and regional distribution patterns</p>
-    </div>
-
-    <div class="grid-2">
-      <div class="chart-card">
-        <h3>Year-on-Year Growth</h3>
-        <div class="sub">Cumulative global reach over time</div>
-        <div class="chart-wrap" style="height:300px"><canvas id="chart-growth-area"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>Regional Breakdown</h3>
-        <div class="sub">Reach distribution by continent</div>
-        <div class="chart-wrap" style="height:300px"><canvas id="chart-region-pie"></canvas></div>
-      </div>
-    </div>
-
-    <div class="insight">
-      <div class="insight-icon">💡</div>
-      <div>
-        <h4>Strategic Insight</h4>
-        <p>The 2025–2026 period shows a significant shift towards supply chain integration in Latin America and Southeast Asia, while Kenya remains our primary hub for large-scale community impact programmes.</p>
-      </div>
-    </div>
-  </div><!-- /trends -->
-
-  <!-- ═══ MEL-PLAN TRACKER ═══ -->
-  <div class="panel" id="panel-milplan">
-    <div class="section-header">
-      <h2>Mil-Plan Tracker (2023–2025)</h2>
-      <p>Specific tracking for M&S and Innocent programmes against MEAL plan targets</p>
-    </div>
-
-    <div class="grid-3">
-      <div class="stat-card purple"><div class="big" id="mp-supply">0</div><div class="label">Supply Chain Reached</div></div>
-      <div class="stat-card green"><div class="big" id="mp-community">0</div><div class="label">Community Reached</div></div>
-      <div class="stat-card"><div class="big" id="mp-total">0</div><div class="label">Total Selection</div></div>
-    </div>
-
-    <div class="grid-2">
-      <div class="card">
-        <h3 style="font-size:14px;font-weight:700;color:var(--purple);margin-bottom:10px;">M&S / Cup of Ambition</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Country</th><th>2023</th><th>2024</th><th>2025</th><th>Total</th></tr></thead>
-            <tbody id="mp-ms-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-      <div class="card">
-        <h3 style="font-size:14px;font-weight:700;color:var(--orange);margin-bottom:10px;">Innocent Drinks</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Country</th><th>2023</th><th>2024</th><th>2025</th><th>Total</th></tr></thead>
-            <tbody id="mp-innocent-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:16px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-        <div style="font-size:14px;font-weight:700;color:var(--brown);">All Mil-Plan Sessions</div>
-        <div class="filter-bar" style="margin-bottom:0;">
-          <select id="mp-funder-filter" onchange="renderMilPlan()" style="padding:4px 10px; font-size:11px;">
-            <option value="">All Funders</option>
-          </select>
-          <select id="mp-year-filter" onchange="renderMilPlan()" style="padding:4px 10px; font-size:11px;">
-            <option value="">All Years</option>
-            <option value="2023">2023</option>
-            <option value="2024">2024</option>
-            <option value="2025">2025</option>
-          </select>
-        </div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Country</th><th>Partner / Funder</th><th>Context</th><th>Year</th><th>People Reached</th></tr></thead>
-          <tbody id="mp-all-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div><!-- /milplan -->
-
 </div><!-- /main -->
 
 <script>
 // ═══════════════════════════════════════════════════
-// DATA (EXTRACTED FROM EXCEL)
+// DATA
 // ═══════════════════════════════════════════════════
 var D = {
   global: {
-    years:  [2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026],
-    global: [15000,18630,14430,12070,16212,4355,0,1800,8550,9623,3993,6625,1280],
-    kenya:  [8000,10900,11894,6359,3100,2300,0,1400,7020,8417,3122,4065,943]
+    years:  [2023,2024,2025,2026],
+    global: [9623,3993,6625,1285],
+    kenya:  [8417,3122,4065,943]
   },
   rtf: [
-    {country:'Kenya',flag:'KE',classes:23,reach:895,male:344,female:551,color:'#e8820c',
+    {country:'Kenya',flag:'KE',classes:23,reach:895,male:344,female:551,color:'#f39200',
      delivery:[{label:'Community',reach:604,classes:16},{label:'Partner Org',reach:245,classes:6},{label:'New Trainer',reach:46,classes:1}]},
-    {country:'Colombia',flag:'CO',classes:1,reach:30,male:10,female:20,color:'#9b1c5a',delivery:[]},
-    {country:'South Africa',flag:'ZA',classes:1,reach:55,male:45,female:10,color:'#1e7e44',delivery:[]},
+    {country:'Colombia',flag:'CO',classes:1,reach:30,male:10,female:20,color:'#a3195b',delivery:[]},
+    {country:'South Africa',flag:'ZA',classes:1,reach:55,male:45,female:10,color:'#a3195b',delivery:[]},
     {country:'India',flag:'IN',classes:0,reach:0,male:0,female:0,color:'#aaaaaa',delivery:[]}
   ],
   reach: [
     // 2023
-    {yr:2023,country:'South Africa',location:'Western Cape',partner:'Waitrose Foundation',trainer:'Joseph Jacobs',sector:'Fruit',context:'Supply Chain',n:80,impact:true},
-    {yr:2023,country:'Peru',location:'Rodriguez de Medoza',partner:'M&S / Matthew Algie',trainer:'Steve Miles',sector:'Coffee',context:'Supply Chain',n:100,impact:true},
-    {yr:2023,country:'Peru',location:'San Ignacio',partner:'M&S / Matthew Algie',trainer:'Steve Miles',sector:'Coffee',context:'Supply Chain',n:150,impact:true},
-    {yr:2023,country:'Nicaragua',location:'—',partner:'innocent / SOSA',trainer:'Steve Miles',sector:'Pitaya',context:'Supply Chain',n:75,impact:true},
-    {yr:2023,country:'USA',location:'Atlanta',partner:'FSS / RTF',trainer:'Steve Miles',sector:'Recruitment',context:'Community',n:34,impact:false},
-    {yr:2023,country:'Nicaragua',location:'Yali',partner:'innocent / SOSA',trainer:'Steve Miles',sector:'Passionfruit',context:'Supply Chain',n:40,impact:true},
-    {yr:2023,country:'Nicaragua',location:'Tipitapa',partner:'Metanoia',trainer:'Steve Miles',sector:'Pastors',context:'Community',n:180,impact:false},
-    {yr:2023,country:'Nicaragua',location:'—',partner:'innocent / SOSA',trainer:'Steve Miles',sector:'Pitaya',context:'Supply Chain',n:23,impact:true},
-    {yr:2023,country:'India',location:'—',partner:'innocent / Exotic Fruit',trainer:'Vijay Kiran',sector:'White Guava',context:'Supply Chain',n:50,impact:true},
-    {yr:2023,country:'India',location:'—',partner:'innocent / Mother Dairy',trainer:'Vijay Kiran',sector:'Supply Chain',context:'Supply Chain',n:34,impact:true},
-    {yr:2023,country:'Colombia',location:'Barranquilla',partner:'innocent / CEA',trainer:'Steve Miles / Moises Arauz',sector:'Mango',context:'Supply Chain',n:166,impact:true},
-    {yr:2023,country:'Peru',location:'Chimbote',partner:'innocent / Quicornac',trainer:'Steve Miles / Moises Arauz',sector:'Passion Fruit',context:'Supply Chain',n:34,impact:true},
-    {yr:2023,country:'Brazil',location:'São Lourenço',partner:'M&S / Matthew Algie',trainer:'Steve Miles',sector:'Coffee',context:'Supply Chain',n:75,impact:true},
-    {yr:2023,country:'Malawi',location:'Lujeri',partner:'M&S / Ringtons',trainer:'Steve Miles / Peter Waithaka',sector:'Tea',context:'Supply Chain',n:165,impact:true},
-    {yr:2023,country:'Kenya',location:'Various',partner:'UKV / Solania',trainer:'Kenyan Trainers',sector:'Community',context:'Community',n:8355,impact:true},
-    {yr:2023,country:'Kenya',location:'Various',partner:'M&S / KTDA',trainer:'Kenyan Trainers',sector:'Tea',context:'Supply Chain',n:62,impact:true},
+    {yr:2023,country:'South Africa',location:'Western Cape',partner:'Waitrose Foundation',trainer:'Joseph Jacobs',sector:'Fruit',context:'Supply Chain',n:80},
+    {yr:2023,country:'Peru',location:'Rodriguez de Medoza',partner:'M&S / Matthew Algie',trainer:'Steve Miles',sector:'Coffee',context:'Supply Chain',n:100},
+    {yr:2023,country:'Peru',location:'San Ignacio',partner:'M&S / Matthew Algie',trainer:'Steve Miles',sector:'Coffee',context:'Supply Chain',n:150},
+    {yr:2023,country:'Nicaragua',location:'—',partner:'innocent / SOSA',trainer:'Steve Miles',sector:'Pitaya',context:'Supply Chain',n:75},
+    {yr:2023,country:'USA',location:'Atlanta',partner:'FSS / RTF',trainer:'Steve Miles',sector:'Recruitment',context:'Community',n:34},
+    {yr:2023,country:'Nicaragua',location:'Yali',partner:'innocent / SOSA',trainer:'Steve Miles',sector:'Passionfruit',context:'Supply Chain',n:40},
+    {yr:2023,country:'Nicaragua',location:'Tipitapa',partner:'Metanoia',trainer:'Steve Miles',sector:'Pastors',context:'Community',n:180},
+    {yr:2023,country:'Nicaragua',location:'—',partner:'innocent / SOSA',trainer:'Steve Miles',sector:'Pitaya',context:'Supply Chain',n:23},
+    {yr:2023,country:'India',location:'—',partner:'innocent / Exotic Fruit',trainer:'Vijay Kiran',sector:'White Guava',context:'Supply Chain',n:50},
+    {yr:2023,country:'India',location:'—',partner:'innocent / Mother Dairy',trainer:'Vijay Kiran',sector:'Supply Chain',context:'Supply Chain',n:34},
+    {yr:2023,country:'Colombia',location:'Barranquilla',partner:'innocent / CEA',trainer:'Steve Miles / Moises Arauz',sector:'Mango',context:'Supply Chain',n:166},
+    {yr:2023,country:'Peru',location:'Chimbote',partner:'innocent / Quicornac',trainer:'Steve Miles / Moises Arauz',sector:'Passion Fruit',context:'Supply Chain',n:34},
+    {yr:2023,country:'Brazil',location:'São Lourenço',partner:'M&S / Matthew Algie',trainer:'Steve Miles',sector:'Coffee',context:'Supply Chain',n:75},
+    {yr:2023,country:'Malawi',location:'Lujeri',partner:'M&S / Ringtons',trainer:'Steve Miles / Peter Waithaka',sector:'Tea',context:'Supply Chain',n:165},
+    {yr:2023,country:'Kenya',location:'Various',partner:'UKV / Solania',trainer:'Kenyan Trainers',sector:'Community',context:'Community',n:8355},
+    {yr:2023,country:'Kenya',location:'Various',partner:'M&S / KTDA',trainer:'Kenyan Trainers',sector:'Tea',context:'Supply Chain',n:62},
     // 2024
-    {yr:2024,country:'Philippines',location:'Brookes Point, Palawan',partner:'innocent / CardinalAgri',trainer:'Steve Miles',sector:'Coconut',context:'Supply Chain',n:58,impact:true},
-    {yr:2024,country:'Malawi',location:'Lujeri',partner:'M&S / Ringtons (CoA)',trainer:'Steve Miles / Peter Waithaka',sector:'Tea',context:'Supply Chain',n:107,impact:true},
-    {yr:2024,country:'Poland',location:'—',partner:'innocent',trainer:'Steve Miles',sector:'Apples',context:'Supply Chain',n:35,impact:false},
-    {yr:2024,country:'Rwanda',location:'Sorwathe',partner:'M&S / Ringtons (CoA)',trainer:'Steve Miles / James Andare',sector:'Tea',context:'Supply Chain',n:157,impact:true},
-    {yr:2024,country:'USA',location:'Atlanta',partner:'FSS / RTF',trainer:'Steve Miles',sector:'Recruitment',context:'Community',n:43,impact:false},
-    {yr:2024,country:'Peru',location:'Pichanaki',partner:'innocent',trainer:'Steve Miles / Moises Arauz',sector:'Ginger / Turmeric',context:'Supply Chain',n:58,impact:true},
-    {yr:2024,country:'Sierra Leone',location:'Freetown',partner:'Mayor of Freetown',trainer:'Steve Miles / Clare Miles',sector:'Women & Youth',context:'Community',n:201,impact:true},
-    {yr:2024,country:'Madagascar',location:'Sava Region',partner:'innocent / Symrise',trainer:'Tim Walker',sector:'Vanilla',context:'Supply Chain',n:43,impact:true},
-    {yr:2024,country:'Peru',location:'San Ignacio',partner:'M&S / Matthew Algie (CoA)',trainer:'Steve Miles / Moises Arauz',sector:'Coffee',context:'Supply Chain',n:75,impact:true},
-    {yr:2024,country:'UK',location:'Birmingham',partner:'Bill Lattimer / LYN',trainer:'Steve Miles / Millie Tilby',sector:'Community',context:'Community',n:94,impact:false},
-    {yr:2024,country:'Kenya',location:'Nduti',partner:'M&S',trainer:'Ke trainers',sector:'Tea',context:'Supply Chain',n:147,impact:true},
-    {yr:2024,country:'Kenya',location:'Nrb & Naivasha',partner:'RTF',trainer:'Ke trainers',sector:'Community',context:'Community',n:1647,impact:true},
-    {yr:2024,country:'Kenya',location:'Nrb & Naivasha',partner:'Solania',trainer:'Ke trainers',sector:'Community',context:'Community',n:1328,impact:true},
+    {yr:2024,country:'Philippines',location:'Brookes Point, Palawan',partner:'innocent / CardinalAgri',trainer:'Steve Miles',sector:'Coconut',context:'Supply Chain',n:58},
+    {yr:2024,country:'Malawi',location:'Lujeri',partner:'M&S / Ringtons (CoA)',trainer:'Steve Miles / Peter Waithaka',sector:'Tea',context:'Supply Chain',n:107},
+    {yr:2024,country:'Poland',location:'—',partner:'innocent',trainer:'Steve Miles',sector:'Apples',context:'Supply Chain',n:35},
+    {yr:2024,country:'Rwanda',location:'Sorwathe',partner:'M&S / Ringtons (CoA)',trainer:'Steve Miles / James Andare',sector:'Tea',context:'Supply Chain',n:157},
+    {yr:2024,country:'USA',location:'Atlanta',partner:'FSS / RTF',trainer:'Steve Miles',sector:'Recruitment',context:'Community',n:43},
+    {yr:2024,country:'Peru',location:'Pichanaki',partner:'innocent',trainer:'Steve Miles / Moises Arauz',sector:'Ginger / Turmeric',context:'Supply Chain',n:58},
+    {yr:2024,country:'Sierra Leone',location:'Freetown',partner:'Mayor of Freetown',trainer:'Steve Miles / Clare Miles',sector:'Women & Youth',context:'Community',n:201},
+    {yr:2024,country:'Madagascar',location:'Sava Region',partner:'innocent / Symrise',trainer:'Tim Walker',sector:'Vanilla',context:'Supply Chain',n:43},
+    {yr:2024,country:'Peru',location:'San Ignacio',partner:'M&S / Matthew Algie (CoA)',trainer:'Steve Miles / Moises Arauz',sector:'Coffee',context:'Supply Chain',n:75},
+    {yr:2024,country:'UK',location:'Birmingham',partner:'Bill Lattimer / LYN',trainer:'Steve Miles / Millie Tilby',sector:'Community',context:'Community',n:94},
+    {yr:2024,country:'Kenya',location:'Nduti',partner:'M&S',trainer:'Ke trainers',sector:'Tea',context:'Supply Chain',n:147},
+    {yr:2024,country:'Kenya',location:'Nrb & Naivasha',partner:'RTF',trainer:'Ke trainers',sector:'Community',context:'Community',n:1647},
+    {yr:2024,country:'Kenya',location:'Nrb & Naivasha',partner:'Solania',trainer:'Ke trainers',sector:'Community',context:'Community',n:1328},
     // 2025
-    {yr:2025,country:'South Africa',location:'Madikwe Berry Farm',partner:'Waitrose Foundation',trainer:'Vuyani',sector:'Berry Farm workers',context:'Supply Chain',n:53,impact:true},
-    {yr:2025,country:'India',location:'PinkCity',partner:'Monica Vinader',trainer:'Vijay Kiran',sector:'Jewellery factory workers',context:'Supply Chain',n:42,impact:true},
-    {yr:2025,country:'Phillipines',location:'Peter Paul',partner:'Innocent',trainer:'Steve Miles',sector:'Coconut farmers',context:'Supply Chain',n:59,impact:true},
-    {yr:2025,country:'Nicaragua',location:'—',partner:'Compassion International',trainer:'Steve Miles / Moisés',sector:'Church youths',context:'Community',n:140,impact:false},
-    {yr:2025,country:'Nicaragua',location:'—',partner:'Compassion International',trainer:'Steve Miles / Moisés',sector:'Pastors',context:'Community',n:250,impact:false},
-    {yr:2025,country:'Spain',location:'SVZ suppliers',partner:'Innocent',trainer:'Steve Miles',sector:'Company Workers',context:'Supply Chain',n:28,impact:true},
-    {yr:2025,country:'Colombia',location:'Santa Marta',partner:'RTF',trainer:'Steve Miles',sector:'Community Members',context:'Community',n:30,impact:false},
-    {yr:2025,country:'Rwanda',location:'Assopthe',partner:'M&S',trainer:'Cleophas',sector:'Tea Farmers',context:'Supply Chain',n:281,impact:true},
-    {yr:2025,country:'UK',location:'—',partner:'—',trainer:'Emily Hannah',sector:'Universal Credit Beneficiaries',context:'Community',n:139,impact:false},
-    {yr:2025,country:'USA',location:'—',partner:'FSS',trainer:'FSS',sector:'Community',context:'Community',n:1538,impact:false},
-    {yr:2025,country:'Kenya',location:'Nduti/Momul/Gacharage',partner:'M&S',trainer:'Ke trainers',sector:'Tea',context:'Supply Chain',n:917,impact:true},
-    {yr:2025,country:'Kenya',location:'Nrb & Naivasha',partner:'Solania',trainer:'Ke trainers',sector:'Community',context:'Community',n:2994,impact:true},
-    {yr:2025,country:'Kenya',location:'Nrb & Makueni',partner:'WCW',trainer:'Ke trainers',sector:'PWD',context:'Community',n:154,impact:true},
+    {yr:2025,country:'South Africa',location:'Madikwe Berry Farm',partner:'Waitrose Foundation',trainer:'Vuyani',sector:'Berry Farm workers',context:'Supply Chain',n:53},
+    {yr:2025,country:'India',location:'PinkCity',partner:'Monica Vinader',trainer:'Vijay Kiran',sector:'Jewellery factory workers',context:'Supply Chain',n:42},
+    {yr:2025,country:'Philippines',location:'Peter Paul',partner:'Innocent',trainer:'Steve Miles',sector:'Coconut farmers',context:'Supply Chain',n:59},
+    {yr:2025,country:'Nicaragua',location:'—',partner:'Compassion International',trainer:'Steve Miles / Moisés',sector:'Church youths',context:'Community',n:140},
+    {yr:2025,country:'Nicaragua',location:'—',partner:'Compassion International',trainer:'Steve Miles / Moisés',sector:'Pastors',context:'Community',n:250},
+    {yr:2025,country:'Spain',location:'SVZ suppliers',partner:'Innocent',trainer:'Steve Miles',sector:'Company Workers',context:'Supply Chain',n:28},
+    {yr:2025,country:'Colombia',location:'Santa Marta',partner:'RTF',trainer:'Steve Miles',sector:'Community Members',context:'Community',n:30},
+    {yr:2025,country:'Rwanda',location:'Assopthe',partner:'M&S',trainer:'Cleophas',sector:'Tea Farmers',context:'Supply Chain',n:281},
+    {yr:2025,country:'UK',location:'—',partner:'—',trainer:'Emily Hannah',sector:'Universal Credit Beneficiaries',context:'Community',n:139},
+    {yr:2025,country:'USA',location:'—',partner:'FSS',trainer:'FSS',sector:'Community',context:'Community',n:1538},
+    {yr:2025,country:'Kenya',location:'Nduti/Momul/Gacharage',partner:'M&S',trainer:'Ke trainers',sector:'Tea',context:'Supply Chain',n:917},
+    {yr:2025,country:'Kenya',location:'Nrb & Naivasha',partner:'Solania',trainer:'Ke trainers',sector:'Community',context:'Community',n:2994},
+    {yr:2025,country:'Kenya',location:'Nrb & Makueni',partner:'WCW',trainer:'Ke trainers',sector:'PWD',context:'Community',n:154},
     // 2026
-    {yr:2026,country:'South Africa',location:'MII',partner:'RTF - MII',trainer:'Steve/Wangui/Vuyani',sector:'Students',context:'Community',n:55,impact:false},
-    {yr:2026,country:'South Africa',location:'Impedle',partner:'KZN - Kwazulu Natal',trainer:'Vuyani',sector:'Entreprenuers',context:'Community',n:24,impact:false},
-    {yr:2026,country:'South Africa',location:'CentiCow',partner:'KZN - Kwazulu Natal',trainer:'Vuyani',sector:'Entreprenuers',context:'Community',n:23,impact:false},
-    {yr:2026,country:'South Africa',location:'Ixopo',partner:'KZN - Kwazulu Natal',trainer:'Vuyani',sector:'Entreprenuers',context:'Community',n:9,impact:false},
-    {yr:2026,country:'Brazil',location:'Soridaridad',partner:'Innocent/Soridaridad',trainer:'Steve Miles',sector:'Orange Farmers',context:'Supply Chain',n:22,impact:false},
-    {yr:2026,country:'India',location:'Lunawat Gems',partner:'Monica Vinader',trainer:'Vijay',sector:'Factory workers',context:'Supply Chain',n:35,impact:false},
-    {yr:2026,country:'India',location:'Vinayak Jewels',partner:'Monica Vinader',trainer:'Vijay',sector:'Factory workers',context:'Supply Chain',n:31,impact:false},
-    {yr:2026,country:'Kenya',location:"Nairobi/Makueni/Embu/Nyamira/Murang'a",partner:'RTF',trainer:'Kenyan Trainers',sector:'Community',context:'Community',n:895,impact:false},
-    {yr:2026,country:'Kenya',location:'Nduti',partner:'COA',trainer:'Steve',sector:'Supply Chain',context:'Supply Chain',n:48,impact:false},
-    {yr:2026,country:'Rwanda',location:'Assoptte',partner:'COA',trainer:'Cleophas',sector:'Supply Chain',context:'Supply Chain',n:143,impact:false}
+    {yr:2026,country:'South Africa',location:'MII',partner:'RTF - MII',trainer:'Steve/Wangui/Vuyani',sector:'Students',context:'Community',n:55},
+    {yr:2026,country:'South Africa',location:'Impedle',partner:'KZN - Kwazulu Natal',trainer:'Vuyani',sector:'Entreprenuers',context:'Community',n:24},
+    {yr:2026,country:'South Africa',location:'CentiCow',partner:'KZN - Kwazulu Natal',trainer:'Vuyani',sector:'Entreprenuers',context:'Community',n:23},
+    {yr:2026,country:'South Africa',location:'Ixopo',partner:'KZN - Kwazulu Natal',trainer:'Vuyani',sector:'Entreprenuers',context:'Community',n:9},
+    {yr:2026,country:'Brazil',location:'Soridaridad',partner:'Innocent/Soridaridad',trainer:'Steve Miles',sector:'Orange Farmers',context:'Supply Chain',n:22},
+    {yr:2026,country:'India',location:'Lunawat Gems',partner:'Monica Vinader',trainer:'Vijay',sector:'Factory workers',context:'Supply Chain',n:35},
+    {yr:2026,country:'India',location:'Vinayak Jewels',partner:'Monica Vinader',trainer:'Vijay',sector:'Factory workers',context:'Supply Chain',n:31},
+    {yr:2026,country:'Kenya',location:"Nairobi/Makueni/Embu/Nyamira/Murang'a",partner:'RTF',trainer:'Kenyan Trainers',sector:'Community',context:'Community',n:895},
+    {yr:2026,country:'Kenya',location:'Nduti',partner:'COA',trainer:'Steve',sector:'Supply Chain',context:'Supply Chain',n:48},
+    {yr:2026,country:'Rwanda',location:'Assoptte',partner:'COA',trainer:'Cleophas',sector:'Supply Chain',context:'Supply Chain',n:143}
   ],
   projects: [
-    {name:'UWEZO KWA VIJANA',loc:'Kenya — Nairobi & Naivasha',funder:'Rising Tide Foundation',type:'Community',target:20000,n:18008,yr:'2022–2024',due:'Jan 2027',st:'Closure',team:'Kenyan Team',country:'Kenya'},
-    {name:'Cup of Ambition — Peru (Grp 1)',loc:'Peru — Rodriguez de Medoza',funder:'M&S',type:'Supply Chain',target:250,n:250,yr:'Feb 2023',due:'Jan 2025',st:'Closure',team:'Steve Miles',country:'Peru'},
-    {name:'Cup of Ambition — Brazil (Ph.1)',loc:'Brazil',funder:'M&S',type:'Supply Chain',target:80,n:75,yr:'Nov 2023',due:'Jan 2025',st:'Closure',team:'Steve Miles',country:'Brazil'},
-    {name:'Cup of Ambition — Malawi (Sukambizi)',loc:'Malawi — Sukambizi',funder:'M&S',type:'Supply Chain',target:300,n:271,yr:'Dec 2023–Jul 2024',due:'Jan 2025',st:'Closure',team:'Steve Miles / Peter',country:'Malawi'},
-    {name:'Philippines — Coconut Farmers',loc:'Philippines — Brookes Point',funder:'Innocent Drinks',type:'Supply Chain',target:60,n:54,yr:'Jul 2024',due:'Jul 2025',st:'Closure',team:'Steve Miles',country:'Philippines'},
+    {name:'UWEZO KWA VIJANA (UKV)',loc:'Kenya — Nairobi & Naivasha',funder:'Rising Tide Foundation',type:'Community',target:20000,n:18008,yr:'2022–2024',due:'Jan 2027',st:'Closure',team:'Kenyan Team',country:'Kenya'},
+    {name:'Cup of Ambition',loc:'Peru — Rodriguez de Medoza',funder:'M&S',type:'Supply Chain',target:250,n:250,yr:'Feb 2023',due:'Jan 2025',st:'Closure',team:'Steve Miles',country:'Peru'},
+    {name:'Cup of Ambition',loc:'Brazil',funder:'M&S',type:'Supply Chain',target:80,n:75,yr:'Nov 2023',due:'Jan 2025',st:'Closure',team:'Steve Miles',country:'Brazil'},
+    {name:'Cup of Ambition',loc:'Malawi — Sukambizi',funder:'M&S',type:'Supply Chain',target:300,n:271,yr:'Dec 2023–Jul 2024',due:'Jan 2025',st:'Closure',team:'Steve Miles / Peter',country:'Malawi'},
+    {name:'Innocent Drinks',loc:'Philippines — Brookes Point',funder:'Innocent Drinks',type:'Supply Chain',target:60,n:54,yr:'Jul 2024',due:'Jul 2025',st:'Closure',team:'Steve Miles',country:'Philippines'},
     {name:'UKV+',loc:'Nairobi, Kajiado, Kiambu, Nakuru, Machakos',funder:'Solania',type:'Community',target:5000,n:4200,yr:'Oct 2024–Sept 2025',due:'Done',st:'Closure',team:'Kenyan Trainers',country:'Kenya'},
-    {name:'Cup of Ambition — Kenya (Nduti)',loc:'Kenya — Nduti',funder:'M&S',type:'Supply Chain',target:150,n:147,yr:'Jun–Jul 2024',due:'Jan 2025',st:'Closure',team:'Peter / Shelmith',country:'Kenya'},
-    {name:'Cup of Ambition — Rwanda (Sorwathe)',loc:'Rwanda — Sorwathe',funder:'M&S',type:'Supply Chain',target:160,n:157,yr:'Aug 2024',due:'Jan 2025',st:'Closure',team:'Steve / James Andare',country:'Rwanda'},
-    {name:'Peru — Ginger & Turmeric Farmers',loc:'Peru — Pichanaki',funder:'Innocent Drinks',type:'Supply Chain',target:60,n:58,yr:'Oct 2024',due:'Jun 2025',st:'Closure',team:'Steve Miles / Moises',country:'Peru'},
-    {name:'Sierra Leone',loc:'Sierra Leone — Freetown',funder:'Emerging Leaders',type:'Community',target:200,n:200,yr:'Oct 2024',due:'Mar 2025',st:'Closure',team:'Steve / Clare Miles',country:'Sierra Leone'},
-    {name:'PinkCity Jewellery Factory',loc:'India — PinkCity',funder:'Monica Vinader',type:'Supply Chain',target:45,n:42,yr:'Apr 2025',due:'Jan 2026',st:'Closure',team:'Vijay Kiran',country:'India'},
-    {name:'Madagascar — Vanilla Farmers',loc:'Madagascar — Sava Region',funder:'Innocent Drinks',type:'Supply Chain',target:45,n:41,yr:'Nov 2024',due:'End Jul 2025',st:'Closure',team:'Tim Walker',country:'Madagascar'},
-    {name:'Cup of Ambition — Kenya (Momul)',loc:'Kenya — Momul',funder:'M&S',type:'Supply Chain',target:200,n:179,yr:'Feb–Mar 2025',due:'Aug 2025',st:'Closure',team:'Steve Miles',country:'Kenya'},
-    {name:'Empowering Berry Farmers — SA',loc:'South Africa — Madikwe',funder:'Waitrose Foundation',type:'Supply Chain',target:80,n:53,yr:'Jan 2025',due:'Jan–Feb 2026',st:'In Progress',team:'Vuyani',country:'South Africa'},
-    {name:'Carina Farm',loc:'South Africa',funder:'Waitrose Foundation',type:'Supply Chain',target:100,n:80,yr:'Jan 2023',due:'—',st:'In Progress',team:'Vuyani',country:'South Africa'},
-    {name:'Cup of Ambition — Peru (Grp 2)',loc:'Peru',funder:'M&S',type:'Supply Chain',target:80,n:75,yr:'Nov 2024',due:'Dec 2026',st:'In Progress',team:'Steve Miles',country:'Peru'},
-    {name:'Cup of Ambition — Kenya 2025',loc:'Kenya',funder:'M&S',type:'Supply Chain',target:800,n:737,yr:'Jun–Jul 2025',due:'May 2026',st:'In Progress',team:'Kenyan Team',country:'Kenya'},
-    {name:'Cup of Ambition — Rwanda 2025 (A)',loc:'Rwanda — Assopthe',funder:'M&S',type:'Supply Chain',target:300,n:281,yr:'Jun–Sept 2025',due:'May 2026',st:'In Progress',team:'Cleophas',country:'Rwanda'},
-    {name:'Cup of Ambition — Rwanda 2025 (B)',loc:'Rwanda',funder:'M&S',type:'Supply Chain',target:450,n:430,yr:'Apr 2025',due:'May 2026',st:'In Progress',team:'Cleophas',country:'Rwanda'},
-    {name:'Peter Paul — Philippines',loc:'Philippines',funder:'Innocent Drinks',type:'Supply Chain',target:60,n:56,yr:'Jun 2025',due:'Mar 2026',st:'In Progress',team:'Steve Miles',country:'Philippines'},
-    {name:'Nicaragua — Pastors & Youth',loc:'Nicaragua',funder:'Compassion International',type:'Community',target:400,n:390,yr:'May 2025',due:'Mar 2026',st:'In Progress',team:'Steve / Moisés',country:'Nicaragua'},
-    {name:'SVZ Suppliers Training — Spain',loc:'Spain',funder:'Innocent Drinks',type:'Supply Chain',target:30,n:28,yr:'Oct 2025',due:'Mar 2026',st:'In Progress',team:'Steve Miles',country:'Spain'},
-    {name:'Lunawat Gems — India',loc:'India — Lunawat Gems',funder:'Monica Vinader',type:'Supply Chain',target:40,n:35,yr:'Jan 2026',due:'Aug 2026',st:'In Progress',team:'Vijay',country:'India'},
-    {name:'Vinayak India — Jewellery Workers',loc:'India — Vinayak Jewels',funder:'Monica Vinader',type:'Supply Chain',target:35,n:31,yr:'Jan 2026',due:'Aug 2027',st:'In Progress',team:'Vijay',country:'India'},
-    {name:'Empowering Entrepreneurs — Centicow',loc:'South Africa — KZN',funder:'KZN',type:'Community',target:30,n:23,yr:'Jan 2026',due:'Sept 2026',st:'In Progress',team:'Vuyani',country:'South Africa'},
-    {name:'Empowering Entrepreneurs — Impedle',loc:'South Africa — KZN',funder:'KZN',type:'Community',target:30,n:24,yr:'Jan 2026',due:'Sept 2026',st:'In Progress',team:'Vuyani',country:'South Africa'},
-    {name:'Empowering Entrepreneurs — Ixopo',loc:'South Africa — KZN',funder:'KZN',type:'Community',target:20,n:10,yr:'Mar 2026',due:'Sept 2026',st:'In Progress',team:'Vuyani',country:'South Africa'},
-    {name:'RTF — Colombia',loc:'Colombia — Santa Marta',funder:'Rising Tide Foundation',type:'Community',target:500,n:28,yr:'Nov 2025',due:'Jul 2027',st:'In Progress',team:'Steve Miles',country:'Colombia'},
-    {name:'RTF — South Africa',loc:'South Africa — MII',funder:'Rising Tide Foundation',type:'Community',target:500,n:55,yr:'Mar 2026',due:'Jul 2027',st:'In Progress',team:'Steve / Wangui / Vuyani',country:'South Africa'},
-    {name:'RTF — Kenya',loc:'Kenya — Multiple Counties',funder:'Rising Tide Foundation',type:'Community',target:1000,n:895,yr:'Feb 2026',due:'Jul 2027',st:'In Progress',team:'Kenyan Trainers',country:'Kenya'},
-    {name:'Brazil — Orange Farmers',loc:'Brazil — Soridaridad',funder:'Innocent Drinks',type:'Supply Chain',target:50,n:36,yr:'Mar 2026',due:'Sept 2026',st:'In Progress',team:'Steve Miles',country:'Brazil'},
-    {name:'Cup of Ambition — Rwanda 2026',loc:'Rwanda — Assoptte',funder:'M&S',type:'Supply Chain',target:200,n:143,yr:'Jan–Feb 2026',due:'May 2026',st:'In Progress',team:'Cleophas',country:'Rwanda'},
-    {name:'Cup of Ambition — Kenya 2026',loc:'Kenya — Nduti',funder:'M&S',type:'Supply Chain',target:200,n:48,yr:'Feb 2026',due:'Dec 2026',st:'In Progress',team:'Steve',country:'Kenya'},
-    {name:'RTF — India',loc:'India',funder:'Rising Tide Foundation',type:'Community',target:500,n:0,yr:'TBC',due:'Jul 2027',st:'Not Started',team:'TBC',country:'India'}
+    {name:'Cup of Ambition',loc:'Kenya — Nduti',funder:'M&S',type:'Supply Chain',target:150,n:147,yr:'Jun–Jul 2024',due:'Jan 2025',st:'Closure',team:'Peter / Shelmith',country:'Kenya'},
+    {name:'Cup of Ambition',loc:'Rwanda — Sorwathe',funder:'M&S',type:'Supply Chain',target:160,n:157,yr:'Aug 2024',due:'Jan 2025',st:'Closure',team:'Steve / James Andare',country:'Rwanda'},
+    {name:'Innocent Drinks',loc:'Peru — Pichanaki',funder:'Innocent Drinks',type:'Supply Chain',target:60,n:58,yr:'Oct 2024',due:'Jun 2025',st:'Closure',team:'Steve Miles / Moises',country:'Peru'},
+    {name:'Sierra Leone — Women & Youth',loc:'Sierra Leone — Freetown',funder:'Emerging Leaders',type:'Community',target:200,n:200,yr:'Oct 2024',due:'Mar 2025',st:'Closure',team:'Steve / Clare Miles',country:'Sierra Leone'},
+    {name:'Jewellery Factory Workers',loc:'India — PinkCity',funder:'Monica Vinader',type:'Supply Chain',target:45,n:42,yr:'Apr 2025',due:'Jan 2026',st:'Closure',team:'Vijay Kiran',country:'India'},
+    {name:'Innocent Drinks',loc:'Madagascar — Sava Region',funder:'Innocent Drinks',type:'Supply Chain',target:45,n:41,yr:'Nov 2024',due:'End Jul 2025',st:'Closure',team:'Tim Walker',country:'Madagascar'},
+    {name:'Cup of Ambition',loc:'Kenya — Momul',funder:'M&S',type:'Supply Chain',target:200,n:179,yr:'Feb–Mar 2025',due:'Aug 2025',st:'Closure',team:'Steve Miles',country:'Kenya'},
+    {name:'Waitrose Foundation',loc:'South Africa — Madikwe Berry Farm',funder:'Waitrose Foundation',type:'Supply Chain',target:80,n:53,yr:'Jan 2025',due:'Jan–Feb 2026',st:'In Progress',team:'Vuyani',country:'South Africa'},
+    {name:'Waitrose Foundation',loc:'South Africa — Carina Farm',funder:'Waitrose Foundation',type:'Supply Chain',target:100,n:80,yr:'Jan 2023',due:'—',st:'In Progress',team:'Vuyani',country:'South Africa'},
+    {name:'Cup of Ambition',loc:'Peru',funder:'M&S',type:'Supply Chain',target:80,n:75,yr:'Nov 2024',due:'Dec 2026',st:'In Progress',team:'Steve Miles',country:'Peru'},
+    {name:'Cup of Ambition',loc:'Kenya',funder:'M&S',type:'Supply Chain',target:800,n:737,yr:'Jun–Jul 2025',due:'May 2026',st:'In Progress',team:'Kenyan Team',country:'Kenya'},
+    {name:'Cup of Ambition',loc:'Rwanda — Assopthe',funder:'M&S',type:'Supply Chain',target:300,n:281,yr:'Jun–Sept 2025',due:'May 2026',st:'In Progress',team:'Cleophas',country:'Rwanda'},
+    {name:'Cup of Ambition',loc:'Rwanda',funder:'M&S',type:'Supply Chain',target:450,n:430,yr:'Apr 2025',due:'May 2026',st:'In Progress',team:'Cleophas',country:'Rwanda'},
+    {name:'Innocent Drinks',loc:'Philippines',funder:'Innocent Drinks',type:'Supply Chain',target:60,n:56,yr:'Jun 2025',due:'Mar 2026',st:'In Progress',team:'Steve Miles',country:'Philippines'},
+    {name:'Compassion International',loc:'Nicaragua — Pastors & Youth',funder:'Compassion International',type:'Community',target:400,n:390,yr:'May 2025',due:'Mar 2026',st:'In Progress',team:'Steve / Moisés',country:'Nicaragua'},
+    {name:'Innocent Drinks',loc:'Spain — SVZ Suppliers',funder:'Innocent Drinks',type:'Supply Chain',target:30,n:28,yr:'Oct 2025',due:'Mar 2026',st:'In Progress',team:'Steve Miles',country:'Spain'},
+    {name:'Jewellery Factory Workers',loc:'India — Lunawat Gems',funder:'Monica Vinader',type:'Supply Chain',target:40,n:35,yr:'Jan 2026',due:'Aug 2026',st:'In Progress',team:'Vijay',country:'India'},
+    {name:'Jewellery Factory Workers',loc:'India — Vinayak Jewels',funder:'Monica Vinader',type:'Supply Chain',target:35,n:31,yr:'Jan 2026',due:'Aug 2027',st:'In Progress',team:'Vijay',country:'India'},
+    {name:'Empowering Entrepreneurs',loc:'South Africa — KZN (Centicow)',funder:'KZN',type:'Community',target:30,n:23,yr:'Jan 2026',due:'Sept 2026',st:'In Progress',team:'Vuyani',country:'South Africa'},
+    {name:'Empowering Entrepreneurs',loc:'South Africa — KZN (Impedle)',funder:'KZN',type:'Community',target:30,n:24,yr:'Jan 2026',due:'Sept 2026',st:'In Progress',team:'Vuyani',country:'South Africa'},
+    {name:'Empowering Entrepreneurs',loc:'South Africa — KZN (Ixopo)',funder:'KZN',type:'Community',target:20,n:10,yr:'Mar 2026',due:'Sept 2026',st:'In Progress',team:'Vuyani',country:'South Africa'},
+    {name:'RTF Pilot Programme',loc:'Colombia — Santa Marta',funder:'Rising Tide Foundation',type:'Community',target:500,n:28,yr:'Nov 2025',due:'Jul 2027',st:'In Progress',team:'Steve Miles',country:'Colombia'},
+    {name:'RTF Pilot Programme',loc:'South Africa — MII',funder:'Rising Tide Foundation',type:'Community',target:500,n:55,yr:'Mar 2026',due:'Jul 2027',st:'In Progress',team:'Steve / Wangui / Vuyani',country:'South Africa'},
+    {name:'RTF Pilot Programme',loc:'Kenya — Multiple Counties',funder:'Rising Tide Foundation',type:'Community',target:1000,n:895,yr:'Feb 2026',due:'Jul 2027',st:'In Progress',team:'Kenyan Trainers',country:'Kenya'},
+    {name:'Innocent Drinks',loc:'Brazil — Soridaridad',funder:'Innocent Drinks',type:'Supply Chain',target:50,n:36,yr:'Mar 2026',due:'Sept 2026',st:'In Progress',team:'Steve Miles',country:'Brazil'},
+    {name:'Cup of Ambition',loc:'Rwanda — Assoptte',funder:'M&S',type:'Supply Chain',target:200,n:143,yr:'Jan–Feb 2026',due:'May 2026',st:'In Progress',team:'Cleophas',country:'Rwanda'},
+    {name:'Cup of Ambition',loc:'Kenya — Nduti',funder:'M&S',type:'Supply Chain',target:200,n:48,yr:'Feb 2026',due:'Dec 2026',st:'In Progress',team:'Steve',country:'Kenya'},
+    {name:'RTF Pilot Programme',loc:'India',funder:'Rising Tide Foundation',type:'Community',target:500,n:0,yr:'TBC',due:'Jul 2027',st:'Not Started',team:'TBC',country:'India'}
   ]
 };
 
@@ -972,272 +762,269 @@ var CH = {};
 function el(id){return document.getElementById(id);}
 function fmt(n){return n.toLocaleString();}
 function dc(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
-var CO='#e8820c', CP='#9b1c5a', CG='#1e7e44', CT='#5c3520', CGRID='rgba(30,14,4,0.06)';
-var COA='rgba(232,130,12,0.75)', CPA='rgba(155,28,90,0.75)', CGA='rgba(30,126,68,0.75)';
-var TT={backgroundColor:'rgba(30,14,4,0.9)',titleFont:{family:'Poppins',size:13},bodyFont:{family:'Poppins',size:12},padding:12,cornerRadius:8};
+var CO='#f39200', CP='#a3195b', CG='#a3195b', CT='#2a2829', CGRID='rgba(46,12,30,0.06)';
+var COA='rgba(243,146,0,0.75)', CPA='rgba(163,25,91,0.75)', CGA='rgba(233,183,174,0.85)';
+var TT={backgroundColor:'rgba(46,12,30,0.9)',titleFont:{family:'Poppins',size:13},bodyFont:{family:'Poppins',size:12},padding:12,cornerRadius:8};
 function axBase(grid){return{x:{grid:{display:false},ticks:{color:CT,font:{family:'Poppins',size:10}}},y:{grid:{display:grid,color:CGRID},ticks:{color:CT,font:{family:'Poppins',size:10},callback:function(v){return v>=1000?(v/1000)+'k':v;}}}};}
 
 // ═══════════════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════════════
 function switchTab(id, elBtn) {
-  var panels=document.querySelectorAll('.panel');
-  panels.forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
   var target=document.getElementById('panel-'+id);
   if(target)target.classList.add('active');
-  var tabs=document.querySelectorAll('.nav-tab');
-  tabs.forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
   if(elBtn)elBtn.classList.add('active');
-  
   if(id==='overview') setTimeout(renderOverview, 50);
-  if(id==='context') setTimeout(function(){ initContextFilters(); filterContext(); }, 50);
+  if(id==='kenya') setTimeout(renderKenya, 50);
   if(id==='projects') setTimeout(renderProjects, 50);
-  if(id==='reach-log') setTimeout(renderReachLog, 50);
   if(id==='rtf') setTimeout(renderRTF, 50);
-  if(id==='trends') setTimeout(renderTrends, 50);
-  if(id==='milplan') setTimeout(renderMilPlan, 50);
 }
 
 // ═══════════════════════════════════════════════════
 // RENDER OVERVIEW
 // ═══════════════════════════════════════════════════
 function renderOverview(){
-  var g=D.global, r=D.rtf, m=D.projects;
-  var total=0; g.global.forEach(function(v){total+=v;});
-  var active=0, done=0, ns=0;
+  var allYearsData=[15000,18630,14430,12070,16212,4355,0,1800,8550,9623,3993,6625,1285];
+  var allKenyaData=[12000,14000,11000,8500,9800,3000,0,1200,6000,8417,3122,4065,943];
+  var total=0; allYearsData.forEach(function(v){total+=v;});
+  var m=D.projects, active=0, done=0, ns=0;
   m.forEach(function(p){if(p.st==='In Progress')active++; else if(p.st==='Closure')done++; else ns++;});
 
-  // Header KPIs
   el('kpi-total').textContent=fmt(total);
-  el('kpi-kenya').textContent=fmt(g.kenya.reduce((a,b)=>a+b,0));
-  el('kpi-active').textContent=active;
-  
-  // Global line chart
+  el('kpi-kenya').textContent=fmt(67520);
+  el('kpi-countries').textContent='26';
+
+  var allSC=D.reach.filter(function(r){return r.context==='Supply Chain';}).reduce(function(s,r){return s+r.n;},0);
+  var allCom=D.reach.filter(function(r){return r.context==='Community';}).reduce(function(s,r){return s+r.n;},0);
+  el('ov-sc-total').textContent=allSC.toLocaleString();
+  el('ov-com-total').textContent=allCom.toLocaleString();
+  el('ov-active-proj').textContent=active;
+  el('ov-done-proj').textContent=done;
+
+  // ── Annual Global Reach — 2014 to 2026 ──
+  var allLabels=['2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025','2026'];
   dc('chart-global-line');
   CH['chart-global-line']=new Chart(el('chart-global-line'),{type:'line',
-    data:{labels:g.years,datasets:[
-      {label:'Global',data:g.global,borderColor:CO,backgroundColor:'rgba(232,130,12,0.07)',tension:0.4,pointBackgroundColor:CO,pointRadius:4,fill:true},
-      {label:'Kenya', data:g.kenya, borderColor:CP,backgroundColor:'rgba(155,28,90,0.07)',tension:0.4,pointBackgroundColor:CP,pointRadius:4,fill:true}
+    data:{labels:allLabels,datasets:[
+      {label:'Global',data:allYearsData,borderColor:CO,backgroundColor:'rgba(243,146,0,0.07)',tension:0.4,pointBackgroundColor:CO,pointRadius:4,fill:true},
+      {label:'Kenya', data:allKenyaData,borderColor:CP,backgroundColor:'rgba(163,25,91,0.06)',tension:0.4,pointBackgroundColor:CP,pointRadius:4,fill:true}
     ]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:true,labels:{color:CT,boxWidth:12,font:{family:'Poppins',size:11}}},tooltip:TT},
       scales:axBase(false)}
   });
 
-  // Country bar — replaced by static table in the HTML
-  // (All-time Cumulative Reach by Country is now a static table sourced from the tracker)
-
-  // 2026 chart
+  // ── 2026 YTD — horizontal bar chart ──
   var yr26=D.reach.filter(function(r){return r.yr===2026;});
   var c26={};
   yr26.forEach(function(r){c26[r.country]=(c26[r.country]||0)+r.n;});
   var c26Arr=Object.entries(c26).sort(function(a,b){return b[1]-a[1];});
-  dc('chart-2026');
-  CH['chart-2026']=new Chart(el('chart-2026'),{type:'bar',
-    data:{labels:c26Arr.map(function(e){return e[0];}),
-          datasets:[{data:c26Arr.map(function(e){return e[1];}),
-            backgroundColor:c26Arr.map(function(_,i){return i%2===0?COA:CPA;}),borderRadius:6}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:TT},scales:axBase(false)}
+  var barColors=['#f39200','#a3195b','#a3195b','#d97706','#0369a1','#7c3aed','#be123c'];
+  dc('chart-2026-bar');
+  CH['chart-2026-bar']=new Chart(el('chart-2026-bar'),{
+    type:'bar',
+    data:{
+      labels:c26Arr.map(function(e){return e[0];}),
+      datasets:[{
+        data:c26Arr.map(function(e){return e[1];}),
+        backgroundColor:c26Arr.map(function(e,i){return barColors[i%barColors.length];}),
+        borderRadius:5,
+        borderSkipped:false
+      }]
+    },
+    options:{
+      indexAxis:'y',
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          ...TT,
+          callbacks:{label:function(ctx){return ' '+ctx.parsed.x.toLocaleString()+' people';}}
+        }
+      },
+      scales:{
+        x:{grid:{color:CGRID},ticks:{color:CT,font:{family:'Poppins',size:10},callback:function(v){return v>=1000?(v/1000)+'k':v;}},beginAtZero:true},
+        y:{grid:{display:false},ticks:{color:CT,font:{family:'Poppins',size:11,weight:'600'}}}
+      }
+    }
   });
 
-  // Funders
-  var fMap={};
-  D.reach.forEach(function(r){
-    var f=r.partner.split('/')[0].trim();
-    fMap[f] = (fMap[f] || 0) + r.n;
-  });
-  var fArr=Object.entries(fMap).sort(function(a,b){return b[1]-a[1];}).slice(0,8);
-  var fMax=fArr[0]?fArr[0][1]:1,fH='';
-  fArr.forEach(function(f,i){
+  // ── Key Partners bar — from Partner Reach Summary (all years) ──
+  var partnerData=[
+    ['RTF',11044],
+    ['Solania',4322],
+    ['M&S',2365],
+    ['FSS',1615],
+    ['innocent',725],
+    ['Compassion Intl',390],
+    ['Mayor of Freetown',201],
+    ['Metanoia',180]
+  ];
+  var fMax=partnerData[0][1],fH='';
+  partnerData.forEach(function(f,i){
+    var pct=(f[1]/fMax*100).toFixed(1);
+    var barColor=i===0?CO:i===1?CP:i===2?'#e9b7ae':i===3?CO:i===4?CP:'#e9b7ae';
     fH+='<div class="funder-row"><div class="funder-name">'+f[0]+'</div>'+
-        '<div class="funder-bar-wrap"><div class="funder-bar-fill" style="width:'+(f[1]/fMax*100).toFixed(1)+'%;background:'+(i%2===0?CO:CP)+'"></div></div>'+
+        '<div class="funder-bar-wrap"><div class="funder-bar-fill" style="width:'+pct+'%;background:'+barColor+';height:100%;border-radius:99px;"></div></div>'+
         '<div class="funder-val">'+fmt(f[1])+'</div></div>';
   });
   el('funder-list').innerHTML=fH;
 
-  renderPartnerReach();
-}
-
-// ═══════════════════════════════════════════════════
-// RENDER CONTEXT DRILLDOWN (PRIMARY)
-// ═══════════════════════════════════════════════════
-var ctxBarChart = null;
-var ctxStatusChart = null;
-
-function initContextFilters() {
-  var countries=[],funders=[];
-  D.reach.forEach(function(r){
-    if(countries.indexOf(r.country)<0)countries.push(r.country);
-    var f=r.partner.split('/')[0].trim();
-    if(funders.indexOf(f)<0)funders.push(f);
-  });
-  countries.sort(); funders.sort();
-  var cSel=el('ctx-country');
-  var fSel=el('ctx-funder');
-  if(cSel && cSel.options.length <= 1) countries.forEach(function(c){var o=document.createElement('option');o.value=c;o.text=c;cSel.appendChild(o);});
-  if(fSel && fSel.options.length <= 1) funders.forEach(function(f){var o=document.createElement('option');o.value=f;o.text=f;fSel.appendChild(o);});
-}
-
-function setContextFilter(ctx) {
-  var sel = el('ctx-context');
-  if(sel){sel.value=ctx; filterContext();}
-}
-
-function filterContext() {
-  var ctx  =(el('ctx-context')||{}).value||'';
-  var cntry=(el('ctx-country')||{}).value||'';
-  var fund =(el('ctx-funder')||{}).value||'';
-  var yr   =(el('ctx-year')||{}).value||'';
-  var st   =(el('ctx-status')||{}).value||'';
-
-  var rows = D.reach.filter(function(r){
-    var fKey=r.partner.split('/')[0].trim();
-    return (!ctx   || r.context===ctx)
-        && (!cntry || r.country===cntry)
-        && (!fund  || fKey===fund)
-        && (!yr    || r.yr===+yr);
-  });
-
-  // Top Stats
-  var allSC  = D.reach.filter(function(r){return r.context==='Supply Chain';}).reduce(function(s,r){return s+r.n;},0);
-  var allCom = D.reach.filter(function(r){return r.context==='Community';}).reduce(function(s,r){return s+r.n;},0);
-  el('ctx-sc-total').textContent  = allSC.toLocaleString();
-  el('ctx-com-total').textContent = allCom.toLocaleString();
-  
-  var active=0, done=0, ns=0;
-  D.projects.forEach(function(p){
-    if(p.st==='In Progress')active++; 
-    else if(p.st==='Closure')done++; 
-    else ns++;
-  });
-  el('ctx-active-proj').textContent = active;
-  el('ctx-done-proj').textContent = done;
-
-  // Highlight active cards
-  el('ctx-sc-card').style.background = ctx==='Supply Chain' ? 'var(--orange-soft)' : 'var(--white)';
-  el('ctx-com-card').style.background = ctx==='Community' ? 'var(--orange-soft)' : 'var(--white)';
-
-  // Table
-  var tbody=el('ctx-tbody');
-  if(tbody){
-    var sorted=rows.slice().sort(function(a,b){return b.n-a.n;});
-    tbody.innerHTML = sorted.length ? sorted.map(function(r){
-      var scl=r.context==='Supply Chain'?'pill-supply':'pill-community';
-      return '<tr><td>'+r.yr+'</td><td>'+r.country+'</td><td>'+r.partner+'</td>'
-        +'<td><span class="pill '+scl+'">'+r.context+'</span></td>'
-        +'<td>'+r.sector+'</td><td>'+r.trainer+'</td>'
-        +'<td style="font-weight:700; color:var(--orange)">'+r.n.toLocaleString()+'</td></tr>';
-    }).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--brown-mid)">No matching sessions</td></tr>';
-  }
-  el('ctx-summary').textContent='Showing '+rows.length+' session'+(rows.length!==1?'s':'')+' · '+rows.reduce(function(s,r){return s+r.n;},0).toLocaleString()+' people reached';
-
-  // Charts
-  renderContextCharts(active, done, ns);
-}
-
-function renderContextCharts(active, done, ns) {
+  // ── Context bar chart ──
   var yrs=[2023,2024,2025,2026];
-  var scByYr =yrs.map(function(y){return D.reach.filter(function(r){return r.yr===y&&r.context==='Supply Chain';}).reduce(function(s,r){return s+r.n;},0);});
+  var scByYr=yrs.map(function(y){return D.reach.filter(function(r){return r.yr===y&&r.context==='Supply Chain';}).reduce(function(s,r){return s+r.n;},0);});
   var comByYr=yrs.map(function(y){return D.reach.filter(function(r){return r.yr===y&&r.context==='Community';}).reduce(function(s,r){return s+r.n;},0);});
-  
   dc('chart-context-bar');
-  CH['chart-context-bar']=new Chart(el('chart-context-bar'),{
-    type:'bar',
+  CH['chart-context-bar']=new Chart(el('chart-context-bar'),{type:'bar',
     data:{labels:['2023','2024','2025','2026'],datasets:[
       {label:'Supply Chain',data:scByYr,backgroundColor:CPA,borderRadius:4},
       {label:'Community',   data:comByYr,backgroundColor:CGA,borderRadius:4}
     ]},
     options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'top', labels:{font:{family:'Poppins',size:11}}},tooltip:TT},
-      scales:axBase(true)
-    }
+      plugins:{legend:{position:'top',labels:{font:{family:'Poppins',size:11}}},tooltip:TT},
+      scales:axBase(true)}
   });
-
-  dc('chart-status-donut-ctx');
-  CH['chart-status-donut-ctx']=new Chart(el('chart-status-donut-ctx'),{type:'doughnut',
-    data:{labels:['Closure','In Progress','Not Started'],datasets:[{data:[done,active,ns],backgroundColor:[CG,CO,'#9ca3af'],borderWidth:0,hoverOffset:4}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false},tooltip:TT}}
-  });
-  var sNames=['Closure','In Progress','Not Started'],sVals=[done,active,ns],sColors=[CG,CO,'#9ca3af'],stH='';
-  sNames.forEach(function(n,i){stH+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:9px;height:9px;border-radius:2px;background:'+sColors[i]+'"></div><span style="flex:1;font-size:11px;color:var(--brown-mid)">'+n+'</span><span style="font-size:11px;font-weight:700">'+sVals[i]+'</span></div>';});
-  el('status-legend-ctx').innerHTML=stH;
 }
 
 // ═══════════════════════════════════════════════════
-// RENDER PROJECTS
+// RENDER KENYA
+// ═══════════════════════════════════════════════════
+function renderKenya(){
+  var keSC = D.reach.filter(function(r){return r.country==='Kenya'&&r.context==='Supply Chain';}).reduce(function(s,r){return s+r.n;},0);
+  var keCom= D.reach.filter(function(r){return r.country==='Kenya'&&r.context==='Community';}).reduce(function(s,r){return s+r.n;},0);
+  el('ke-sc').textContent=fmt(keSC);
+  el('ke-com').textContent=fmt(keCom);
+
+  // Kenya annual chart — 2014–2026
+  dc('chart-kenya-annual');
+  CH['chart-kenya-annual']=new Chart(el('chart-kenya-annual'),{type:'bar',
+    data:{labels:['2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025','2026 YTD'],
+    datasets:[
+      {label:'Pre-2023 (All Contexts)',data:[2067,3654,5021,6193,8455,9387,3921,4102,8173,0,0,0,0],backgroundColor:'#f39200',borderRadius:4},
+      {label:'Community',data:[0,0,0,0,0,0,0,0,0,8355,2975,3148,895],backgroundColor:'#a3195b',borderRadius:4},
+      {label:'Supply Chain',data:[0,0,0,0,0,0,0,0,0,62,147,917,48],backgroundColor:'#2e0c1e',borderRadius:4}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top',labels:{font:{family:'Poppins',size:11}}},tooltip:TT},
+      scales:axBase(true)}
+  });
+
+  // Kenya all-time context doughnut
+  dc('chart-kenya-delivery');
+  CH['chart-kenya-delivery']=new Chart(el('chart-kenya-delivery'),{type:'doughnut',
+    data:{labels:['2014–2022 (All Contexts)','Community (2023–2026)','Supply Chain (2023–2026)'],datasets:[{data:[50973,15373,1174],backgroundColor:['#a3195b','#f39200','#2a2829'],borderWidth:0,hoverOffset:4}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',
+      plugins:{legend:{position:'bottom',labels:{font:{family:'Poppins',size:10},boxWidth:10}},tooltip:TT}}
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// RENDER PROJECTS — grouped by name
 // ═══════════════════════════════════════════════════
 function renderProjects(){filterProjects();}
+
 function filterProjects(){
   var s=(el('proj-search').value||'').toLowerCase();
+  var yr=el('proj-year').value;
   var st=el('proj-status').value;
   var tp=el('proj-type').value;
-  var projFiltered=D.projects.filter(function(p){
+
+  var filtered=D.projects.filter(function(p){
     if(st&&p.st!==st)return false;
     if(tp&&p.type!==tp)return false;
-    if(s&&!(p.name+p.loc+p.funder+p.team).toLowerCase().includes(s))return false;
+    if(yr&&p.yr.indexOf(yr)<0&&p.due.indexOf(yr)<0)return false;
+    if(s&&!(p.name+p.loc+p.funder+p.team+p.country).toLowerCase().includes(s))return false;
     return true;
   });
-  
-  // Card View
+
+  // Group by name
+  var groups={};
+  var order=[];
+  filtered.forEach(function(p){
+    if(!groups[p.name]){groups[p.name]=[];order.push(p.name);}
+    groups[p.name].push(p);
+  });
+
   var html='';
-  projFiltered.forEach(function(p){
-    var pct=p.target>0?Math.min(100,Math.round(p.n/p.target*100)):0;
-    var tc=p.type==='Supply Chain'?'supply':'community';
-    var sc=p.st==='Closure'?'pill-done':p.st==='In Progress'?'pill-prog':'pill-ns';
-    html+='<div class="proj-card '+tc+'">'+
-      '<div class="proj-card-top"><div class="proj-name">'+p.name+'</div><span class="pill '+sc+'">'+p.st+'</span></div>'+
-      '<div class="proj-meta"><span class="pill '+( tc==='supply'?'pill-supply':'pill-community')+'">'+p.type+'</span><span class="proj-funder">'+p.funder+'</span></div>'+
-      '<div class="proj-loc"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;margin-right:4px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'+p.loc+'</div>'+
-      '<div style="margin-top:5px;" class="proj-team"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;margin-right:4px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'+p.team+'</div>'+
-      '<div class="progress-section"><div class="prog-row"><span class="prog-label">Progress</span><span class="prog-pct">'+pct+'%</span></div><div class="prog-track"><div class="prog-fill '+tc+'" style="width:'+pct+'%"></div></div></div>'+
-      '<div class="proj-targets">'+
-        '<div class="target-item"><div class="target-num">'+fmt(p.n)+'</div><div class="target-lbl">Reached</div></div>'+
-        '<div style="width:1px;background:rgba(30,14,4,0.08);"></div>'+
-        '<div class="target-item"><div class="target-num">'+fmt(p.target)+'</div><div class="target-lbl">Target</div></div>'+
-      '</div></div>';
-  });
-  el('proj-cards').innerHTML=html||'<div style="padding:20px;color:var(--brown-mid);">No projects match.</div>';
+  order.forEach(function(name){
+    var items=groups[name];
+    var totalN=items.reduce(function(s,p){return s+p.n;},0);
+    var totalT=items.reduce(function(s,p){return s+p.target;},0);
+    var pct=totalT>0?Math.min(100,Math.round(totalN/totalT*100)):0;
+    var type=items[0].type;
+    var funder=items[0].funder;
+    var tc=type==='Supply Chain'?'supply':'community';
+    var statuses=[...new Set(items.map(function(p){return p.st;}))];
+    var stLabel=statuses.join(', ');
+    var scClass=items[0].st==='Closure'?'pill-done':items[0].st==='In Progress'?'pill-prog':'pill-ns';
+    var countries=items.map(function(p){return p.country;});
+    var id='grp-'+name.replace(/[^a-z0-9]/gi,'_');
 
-  // Table View
-  var rows='';
-  projFiltered.forEach(function(p){
-    var sc=p.st==='Closure'?'pill-done':p.st==='In Progress'?'pill-prog':'pill-ns';
-    rows+='<tr><td style="font-weight:700">'+p.name+'</td><td>'+p.loc+'</td><td>'+p.funder+'</td><td><span class="pill '+(p.type==='Supply Chain'?'pill-supply':'pill-community')+'">'+p.type+'</span></td><td>'+p.team+'</td><td>'+p.yr+'</td><td>'+fmt(p.target)+'</td><td style="font-weight:800;color:var(--orange)">'+fmt(p.n)+'</td><td>'+p.due+'</td><td><span class="pill '+sc+'">'+p.st+'</span></td></tr>';
+    html+='<div class="proj-group-card">'+
+      '<div class="proj-group-header '+tc+'" onclick="toggleGroup(\''+id+'\')">'+
+        '<div>'+
+          '<div class="proj-group-title">'+name+'</div>'+
+          '<div class="proj-meta" style="margin-top:5px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">'+
+            '<span class="pill '+(type==='Supply Chain'?'pill-supply':'pill-community')+'">'+type+'</span>'+
+            '<span class="proj-funder">'+funder+'</span>'+
+            '<span style="font-size:11px;color:var(--brown-mid);">'+countries.join(' · ')+'</span>'+
+          '</div>'+
+        '</div>'+
+        '<div class="proj-group-meta">'+
+          '<div style="text-align:right;">'+
+            '<div style="font-size:18px;font-weight:800;color:var(--orange);">'+fmt(totalN)+'</div>'+
+            '<div style="font-size:10px;color:var(--brown-mid);">of '+fmt(totalT)+' target</div>'+
+            '<div class="prog-track" style="width:120px;margin-top:4px;"><div class="prog-fill '+tc+'" style="width:'+pct+'%"></div></div>'+
+          '</div>'+
+          '<div class="proj-group-expand">'+
+            (items.length>1?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 9l-7 7-7-7"/></svg>'+items.length+' countries':'<span class="pill '+scClass+'">'+stLabel+'</span>')+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="proj-countries-wrap" id="'+id+'">'+
+        '<div class="proj-country-list">'+
+        items.map(function(p){
+          var pp=p.target>0?Math.min(100,Math.round(p.n/p.target*100)):0;
+          var psc=p.st==='Closure'?'pill-done':p.st==='In Progress'?'pill-prog':'pill-ns';
+          return '<div class="proj-country-item">'+
+            '<div class="proj-country-name">🌍 '+p.country+'</div>'+
+            '<div class="proj-country-detail">'+
+              '<strong>'+p.loc+'</strong><br>'+
+              'Team: '+p.team+'<br>'+
+              'Year: '+p.yr+' · Due: '+p.due+'<br>'+
+              '<span class="pill '+psc+'">'+p.st+'</span>'+
+            '</div>'+
+            '<div style="margin-top:8px;display:flex;justify-content:space-between;font-size:11px;">'+
+              '<span style="font-weight:700;color:var(--orange);">'+fmt(p.n)+' reached</span>'+
+              '<span style="color:var(--brown-mid);">Target: '+fmt(p.target)+'</span>'+
+            '</div>'+
+            '<div class="prog-track"><div class="prog-fill '+tc+'" style="width:'+pp+'%"></div></div>'+
+          '</div>';
+        }).join('')+
+        '</div>'+
+      '</div>'+
+    '</div>';
   });
-  el('proj-tbody').innerHTML=rows;
-}
-function toggleProjView(){
-  var v=el('proj-view').value;
-  el('proj-cards-view').style.display=v==='cards'?'block':'none';
-  el('proj-table-view').style.display=v==='table'?'block':'none';
+
+  el('proj-grouped').innerHTML=html||'<div style="padding:20px;color:var(--brown-mid);">No projects match.</div>';
+  
+  // Auto-open single-country groups
+  order.forEach(function(name){
+    var items=groups[name];
+    var id='grp-'+name.replace(/[^a-z0-9]/gi,'_');
+    if(items.length===1){
+      var wrap=document.getElementById(id);
+      if(wrap)wrap.classList.add('open');
+    }
+  });
 }
 
-// ═══════════════════════════════════════════════════
-// RENDER REACH LOG
-// ═══════════════════════════════════════════════════
-function renderReachLog(){
-  var countries={}; D.reach.forEach(function(r){countries[r.country]=1;});
-  var cSel=el('reach-country');
-  if(cSel.options.length<=1) Object.keys(countries).sort().forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;cSel.appendChild(o);});
-  filterReach();
-}
-function filterReach(){
-  var s=(el('reach-search').value||'').toLowerCase(), yr=el('reach-year').value, tp=(el('reach-type').value||'').toLowerCase(), ct=el('reach-country').value;
-  var filtered=D.reach.filter(function(r){
-    if(yr&&String(r.yr)!==yr)return false;
-    if(ct&&r.country!==ct)return false;
-    if(tp&&r.sector.toLowerCase().indexOf(tp)===-1)return false;
-    if(s&&!(r.country+r.location+r.partner+r.trainer+r.sector).toLowerCase().includes(s))return false;
-    return true;
-  });
-  filtered.sort(function(a,b){return b.yr-a.yr||b.n-a.n;});
-  var rows='';
-  filtered.forEach(function(r){
-    var scl=r.context==='Supply Chain'?'pill-supply':'pill-community';
-    rows+='<tr><td><span class="year-badge">'+r.yr+'</span></td><td>'+r.country+'</td><td style="font-size:11px;color:var(--brown-mid)">'+r.location+'</td><td style="font-weight:600">'+r.partner+'</td><td><span class="trainer-tag">'+r.trainer+'</span></td><td><span class="pill '+scl+'" style="font-size:9px;">'+r.sector+'</span></td><td style="font-weight:800;color:var(--orange)">'+fmt(r.n)+'</td><td>'+(r.impact?'<span class="impact-yes">Yes</span>':'<span class="impact-no">No</span>')+'</td></tr>';
-  });
-  el('reach-tbody').innerHTML=rows;
-  el('reach-summary').textContent='Showing '+filtered.length+' records · '+fmt(filtered.reduce(function(s,r){return s+r.n;},0))+' people reached';
+function toggleGroup(id){
+  var wrap=document.getElementById(id);
+  if(wrap)wrap.classList.toggle('open');
 }
 
 // ═══════════════════════════════════════════════════
@@ -1256,7 +1043,6 @@ function renderRTF(){
   });
   el('rtf-country-cards').innerHTML=cH;
 
-  // Kenya delivery breakdown chart (from tracker)
   dc('chart-rtf-kenya');
   CH['chart-rtf-kenya']=new Chart(el('chart-rtf-kenya'),{type:'doughnut',
     data:{labels:['Direct Delivery — Community','Direct Delivery — Partner Org','New Established Trainer'],
@@ -1265,106 +1051,190 @@ function renderRTF(){
       plugins:{legend:{position:'bottom',labels:{font:{family:'Poppins',size:10},boxWidth:10}},tooltip:TT}}
   });
 
-  // Country comparison
   dc('chart-rtf-compare');
   var rActive=r.filter(function(c){return c.reach>0;});
   CH['chart-rtf-compare']=new Chart(el('chart-rtf-compare'),{type:'bar',
-    data:{labels:rActive.map(function(c){return c.country;}),
-          datasets:[{data:rActive.map(function(c){return c.reach;}),
-            backgroundColor:rActive.map(function(c){return c.color;}),borderRadius:6}]},
+    data:{labels:rActive.map(function(c){return c.country;}),datasets:[{data:rActive.map(function(c){return c.reach;}),backgroundColor:rActive.map(function(c){return c.color;}),borderRadius:6}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:TT},scales:axBase(false)}
   });
 }
 
 // ═══════════════════════════════════════════════════
-// TRENDS & GROWTH
+// WORLD MAP — D3 + TopoJSON driven by mapdata.js config
 // ═══════════════════════════════════════════════════
-function renderTrends(){
-  var g=D.global;
-  var cum=[]; var s=0; g.global.forEach(function(v){s+=v; cum.push(s);});
-  dc('chart-growth-area');
-  CH['chart-growth-area']=new Chart(el('chart-growth-area'),{type:'line',
-    data:{labels:g.years,datasets:[{label:'Cumulative Reach',data:cum,borderColor:CO,backgroundColor:COA,fill:true,tension:0.3}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:TT},scales:axBase(true)}
-  });
+var MAP_COUNTRY_DATA = {
+  // ISO-alpha2 → { reach, sc (supply chain), com (community), flag, label }
+  KE: { reach: 67520, sc: 1174, com: 15373, flag:'🇰🇪', label:'Kenya', type:'both' },
+  US: { reach: 1615,  sc: 0,    com: 1615,  flag:'🇺🇸', label:'United States', type:'community' },
+  NI: { reach: 708,   sc: 75,   com: 633,   flag:'🇳🇮', label:'Nicaragua', type:'both' },
+  RW: { reach: 581,   sc: 581,  com: 0,     flag:'🇷🇼', label:'Rwanda', type:'supply' },
+  PE: { reach: 417,   sc: 417,  com: 0,     flag:'🇵🇪', label:'Peru', type:'supply' },
+  MW: { reach: 272,   sc: 272,  com: 0,     flag:'🇲🇼', label:'Malawi', type:'supply' },
+  ZA: { reach: 244,   sc: 133,  com: 111,   flag:'🇿🇦', label:'South Africa', type:'both' },
+  GB: { reach: 233,   sc: 0,    com: 233,   flag:'🇬🇧', label:'United Kingdom', type:'community' },
+  SL: { reach: 201,   sc: 0,    com: 201,   flag:'🇸🇱', label:'Sierra Leone', type:'community' },
+  CO: { reach: 196,   sc: 166,  com: 30,    flag:'🇨🇴', label:'Colombia', type:'both' },
+  IN: { reach: 192,   sc: 192,  com: 0,     flag:'🇮🇳', label:'India', type:'supply' },
+  PH: { reach: 117,   sc: 117,  com: 0,     flag:'🇵🇭', label:'Philippines', type:'supply' },
+  BR: { reach: 97,    sc: 97,   com: 0,     flag:'🇧🇷', label:'Brazil', type:'supply' },
+  MG: { reach: 43,    sc: 43,   com: 0,     flag:'🇲🇬', label:'Madagascar', type:'supply' },
+  PL: { reach: 35,    sc: 35,   com: 0,     flag:'🇵🇱', label:'Poland', type:'supply' },
+  ES: { reach: 28,    sc: 28,   com: 0,     flag:'🇪🇸', label:'Spain', type:'supply' }
+};
 
-  dc('chart-region-pie');
-  CH['chart-region-pie']=new Chart(el('chart-region-pie'),{type:'pie',
-    data:{labels:['Africa','Americas','Europe','Asia'],datasets:[{data:[85000,12000,1500,4173],backgroundColor:[CO,CP,CG,'#d97706'],borderWidth:0}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'Poppins',size:11}}},tooltip:TT}}
-  });
+function getCountryColor(iso2) {
+  var d = MAP_COUNTRY_DATA[iso2];
+  if (!d) return '#e2d8cf';
+  if (d.type === 'both') return '#f39200';
+  if (d.type === 'community') return '#a3195b';
+  if (d.type === 'supply') return '#d4a853';
+  return '#e2d8cf';
 }
 
-// ═══════════════════════════════════════════════════
-// PARTNER REACH SUMMARY
-// ═══════════════════════════════════════════════════
-function renderPartnerReach() {
-  const years = [2023,2024,2025,2026];
-  const partnerMap = {};
-  D.reach.forEach(function(r) {
-    var key = r.partner.split('/')[0].trim();
-    if (!partnerMap[key]) partnerMap[key] = {2023:0,2024:0,2025:0,2026:0};
-    partnerMap[key][r.yr] = (partnerMap[key][r.yr]||0) + r.n;
-  });
-  var sorted = Object.entries(partnerMap).sort(function(a,b){
-    var ta = years.reduce(function(s,y){return s+(a[1][y]||0);},0);
-    var tb = years.reduce(function(s,y){return s+(b[1][y]||0);},0);
-    return tb-ta;
-  });
-  var tbody = el('partner-reach-tbody');
-  if (!tbody) return;
-  tbody.innerHTML = sorted.map(function(e){
-    var p=e[0], yrs=e[1], tot = years.reduce(function(s,y){return s+(yrs[y]||0);},0);
-    return '<tr><td style="font-weight:600">'+p+'</td>' + years.map(function(y){return '<td>'+(yrs[y]?yrs[y].toLocaleString():'—')+'</td>';}).join('') + '<td style="font-weight:700;color:var(--purple)">'+tot.toLocaleString()+'</td></tr>';
-  }).join('');
-}
+var _mapZoomBehavior = null;
+var _mapSvgRoot = null;
+var _mapG = null;
 
-// ═══════════════════════════════════════════════════
-// MIL-PLAN TRACKER
-// ═══════════════════════════════════════════════════
-function renderMilPlan() {
-  var fFilter = (el('mp-funder-filter')||{}).value||'', yFilter = (el('mp-year-filter')||{}).value||'';
-  var funderSel = el('mp-funder-filter');
-  if (funderSel && funderSel.options.length<=1) {
-    var funders = []; D.reach.forEach(function(r){ var k=r.partner.split('/')[0].trim(); if(funders.indexOf(k)<0)funders.push(k); });
-    funders.sort().forEach(function(f){ var o=document.createElement('option');o.value=f;o.text=f;funderSel.appendChild(o); });
+function mapZoom(factor) {
+  if (_mapZoomBehavior && _mapSvgRoot) {
+    _mapSvgRoot.transition().duration(300).call(_mapZoomBehavior.scaleBy, factor);
   }
-  var subset = D.reach.filter(function(r){
-    var k = r.partner.split('/')[0].trim();
-    return (!fFilter||k===fFilter) && (!yFilter||r.yr===+yFilter) && r.yr>=2023 && r.yr<=2025;
-  });
-  var sc  = subset.filter(function(r){return r.context==='Supply Chain';}).reduce(function(s,r){return s+r.n;},0);
-  var com = subset.filter(function(r){return r.context==='Community';}).reduce(function(s,r){return s+r.n;},0);
-  el('mp-supply').textContent = sc.toLocaleString(); el('mp-community').textContent = com.toLocaleString(); el('mp-total').textContent = (sc+com).toLocaleString();
+}
+function mapReset() {
+  if (_mapZoomBehavior && _mapSvgRoot) {
+    _mapSvgRoot.transition().duration(400).call(_mapZoomBehavior.transform, d3.zoomIdentity);
+  }
+}
 
-  function buildFunderCountry(kw) {
-    var rows={}; D.reach.filter(function(r){return r.yr>=2023&&r.yr<=2025&&r.partner.toLowerCase().indexOf(kw.toLowerCase())>=0;}).forEach(function(r){
-      if(!rows[r.country])rows[r.country]={2023:0,2024:0,2025:0}; rows[r.country][r.yr]=(rows[r.country][r.yr]||0)+r.n;
+function renderWorldMap() {
+  var wrap = document.getElementById('world-map');
+  if (!wrap || !window.d3 || !window.topojson) {
+    setTimeout(renderWorldMap, 400);
+    return;
+  }
+  wrap.innerHTML = '';
+
+  // Use a fixed large viewBox so the map fills the container at full resolution
+  var VW = 960, VH = 500;
+
+  var svg = d3.select('#world-map').append('svg')
+    .attr('viewBox', '0 0 ' + VW + ' ' + VH)
+    .attr('width', '100%')
+    .attr('height', '100%')
+    .attr('preserveAspectRatio', 'xMidYMid meet')
+    .style('display', 'block')
+    .style('min-height', '420px')
+    .style('cursor', 'grab');
+
+  _mapSvgRoot = svg;
+
+  // Ocean background
+  svg.append('rect')
+    .attr('width', VW).attr('height', VH)
+    .attr('fill', '#dbeafe').attr('rx', 10);
+
+  var projection = d3.geoNaturalEarth1()
+    .scale(153)
+    .translate([VW / 2, VH / 2]);
+
+  var pathGen = d3.geoPath().projection(projection);
+  var tt = document.getElementById('map-tooltip');
+
+  // ISO numeric → alpha2
+  var numToA2 = {
+    404:'KE', 840:'US', 558:'NI', 646:'RW', 604:'PE', 454:'MW',
+    710:'ZA', 826:'GB', 694:'SL', 170:'CO', 356:'IN', 608:'PH',
+    76:'BR',  450:'MG', 616:'PL', 724:'ES'
+  };
+
+  // Clip path so countries don't overflow rounded corners
+  svg.append('defs').append('clipPath').attr('id','map-clip')
+    .append('rect').attr('width', VW).attr('height', VH).attr('rx', 10);
+
+  var g = svg.append('g').attr('clip-path','url(#map-clip)');
+  _mapG = g;
+
+  // Zoom behaviour
+  var zoom = d3.zoom()
+    .scaleExtent([1, 12])
+    .on('zoom', function(event) {
+      g.attr('transform', event.transform);
     });
-    return Object.entries(rows).sort(function(a,b){ return (b[1][2023]+b[1][2024]+b[1][2025])-(a[1][2023]+a[1][2024]+a[1][2025]); }).map(function(e){
-      var c=e[0],y=e[1],t=y[2023]+y[2024]+y[2025];
-      return '<tr><td>'+c+'</td><td>'+(y[2023]||'—')+'</td><td>'+(y[2024]||'—')+'</td><td>'+(y[2025]||'—')+'</td><td style="font-weight:700">'+t.toLocaleString()+'</td></tr>';
-    }).join('');
-  }
-  el('mp-ms-tbody').innerHTML  = buildFunderCountry('M&S'); el('mp-innocent-tbody').innerHTML = buildFunderCountry('Innocent');
-  el('mp-all-tbody').innerHTML = subset.slice().sort(function(a,b){return b.n-a.n;}).map(function(r){
-    return '<tr><td>'+r.country+'</td><td>'+r.partner+'</td><td><span class="pill '+(r.context==='Supply Chain'?'pill-supply':'pill-community')+'">'+r.context+'</span></td><td>'+r.yr+'</td><td style="font-weight:700">'+r.n.toLocaleString()+'</td></tr>';
-  }).join('') || '<tr><td colspan="5" style="text-align:center;">No data</td></tr>';
+  _mapZoomBehavior = zoom;
+  svg.call(zoom);
+
+  // Double-click to zoom in
+  svg.on('dblclick.zoom', function(event) {
+    event.preventDefault();
+    svg.transition().duration(350).call(zoom.scaleBy, 2);
+  });
+
+  fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+    .then(function(r) { return r.json(); })
+    .then(function(world) {
+      var countries = topojson.feature(world, world.objects.countries);
+
+      g.selectAll('path')
+        .data(countries.features)
+        .join('path')
+        .attr('d', pathGen)
+        .attr('fill', function(d) { return getCountryColor(numToA2[+d.id]); })
+        .attr('stroke', '#ffffff')
+        .attr('stroke-width', 0.5)
+        .style('transition', 'opacity 0.15s')
+        .style('cursor', function(d) { return numToA2[+d.id] ? 'pointer' : 'grab'; })
+        .on('mouseenter', function(event, d) {
+          var a2 = numToA2[+d.id];
+          var info = a2 ? MAP_COUNTRY_DATA[a2] : null;
+          if (!info || !tt) return;
+          d3.select(this).attr('opacity', 0.75);
+          tt.style.display = 'block';
+          document.getElementById('map-tt-flag').textContent = info.flag;
+          document.getElementById('map-tt-name').textContent = info.label;
+          document.getElementById('map-tt-reach').textContent = info.reach.toLocaleString() + ' people reached';
+          document.getElementById('map-tt-context').innerHTML =
+            (info.sc  ? '<span style="color:rgba(255,255,255,0.45);">Supply Chain</span> ' + info.sc.toLocaleString()  + '<br>' : '') +
+            (info.com ? '<span style="color:rgba(255,255,255,0.45);">Community</span> '    + info.com.toLocaleString() : '');
+        })
+        .on('mousemove', function(event) {
+          if (!tt) return;
+          var x = event.clientX, y = event.clientY;
+          var tw = 220, th = 120;
+          var left = (x + 18 + tw > window.innerWidth) ? x - tw - 12 : x + 18;
+          var top  = (y + 18 + th > window.innerHeight) ? y - th - 8  : y + 18;
+          tt.style.left = left + 'px';
+          tt.style.top  = top  + 'px';
+        })
+        .on('mouseleave', function(event, d) {
+          d3.select(this).attr('opacity', 1);
+          if (tt) tt.style.display = 'none';
+        });
+
+      // Graticule lines
+      g.append('path')
+        .datum(d3.geoGraticule()())
+        .attr('d', pathGen)
+        .attr('fill', 'none')
+        .attr('stroke', 'rgba(255,255,255,0.2)')
+        .attr('stroke-width', 0.4)
+        .attr('pointer-events', 'none');
+    })
+    .catch(function() {
+      wrap.innerHTML = '<div style="padding:40px;text-align:center;color:var(--brown-mid);font-size:12px;">Map unavailable — network connection required.</div>';
+    });
 }
 
 // ═══════════════════════════════════════════════════
 // REFRESH ALL
 // ═══════════════════════════════════════════════════
 function refreshAll(){
-  var ic=el('refresh-icon'); if(ic)ic.classList.add('spin');
+  var ic=el('refresh-icon');if(ic)ic.classList.add('spin');
   setTimeout(function(){
     renderOverview();
-    initContextFilters();
-    filterContext();
     var now=new Date().toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
     el('refresh-time').textContent='Last refreshed '+now;
     if(ic)ic.classList.remove('spin');
-  }, 800);
+  },800);
 }
 
 // ═══════════════════════════════════════════════════
@@ -1372,10 +1242,13 @@ function refreshAll(){
 // ═══════════════════════════════════════════════════
 window.addEventListener('load',function(){
   if(window.lucide)lucide.createIcons();
-  initContextFilters();
-  filterContext();
   el('refresh-time').textContent='Loading data…';
-  refreshAll();
+  renderOverview();
+  renderWorldMap();
+  setTimeout(function(){
+    var now=new Date().toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    el('refresh-time').textContent='Last refreshed '+now;
+  },500);
 });
 </script>
 </body>
