@@ -57,7 +57,7 @@ body{background:#e0e0dc;font-family:'Poppins',sans-serif;color:var(--brown);min-
 .ds-badge.live{color:#4ade80;border-color:rgba(74,222,128,0.3);background:rgba(74,222,128,0.07);}
 
 .nav-wrap{background:var(--white);border-bottom:1px solid rgba(46,12,30,0.08);position:sticky;top:0;z-index:100;}
-.nav{max-width:1280px;margin:0 auto;padding:0 40px;display:flex;gap:0;overflow-x:auto;}
+.nav{max-width:1280px;margin:0 auto;padding:0 40px;display:flex;gap:0;overflow-x:auto;justify-content:center;}
 .nav-tab{padding:14px 20px;font-size:13px;font-weight:500;color:var(--brown-mid);cursor:pointer;border:none;background:transparent;font-family:'Poppins',sans-serif;border-bottom:3px solid transparent;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:7px;}
 .nav-tab.active{color:var(--purple);border-bottom-color:var(--orange);font-weight:700;}
 .nav-tab:hover:not(.active){color:var(--brown);background:var(--brown-light);}
@@ -95,6 +95,12 @@ body{background:#e0e0dc;font-family:'Poppins',sans-serif;color:var(--brown);min-
 .chart-card h3{font-size:14px;font-weight:700;color:var(--purple);margin-bottom:2px;}
 .chart-card .sub{font-size:11px;color:var(--brown-mid);opacity:0.65;margin-bottom:16px;}
 .chart-wrap{position:relative;}
+
+.partner-carousel-wrap{overflow:hidden;position:relative;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);}
+.partner-carousel-track{display:flex;gap:16px;width:max-content;animation:partnerScroll 26s linear infinite;}
+.partner-carousel-wrap:hover .partner-carousel-track{animation-play-state:paused;}
+@keyframes partnerScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.partner-logo-ph{flex:0 0 auto;width:130px;height:64px;border-radius:10px;border:1.5px dashed rgba(46,12,30,0.18);background:rgba(46,12,30,0.02);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--brown-mid);opacity:0.55;letter-spacing:0.3px;text-align:center;padding:0 8px;}
 
 .pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;}
 .pill-done{background:rgba(163,25,91,0.12);color:var(--green);}
@@ -252,7 +258,6 @@ tbody tr:last-child td{border-bottom:none;}
     <button class="nav-tab active" onclick="switchTab('overview',this)"><i data-lucide="globe" class="tab-icon"></i>Overview</button>
     <button class="nav-tab" onclick="switchTab('kenya',this)"><i data-lucide="map-pin" class="tab-icon"></i>Kenya</button>
     <button class="nav-tab" onclick="switchTab('projects',this)"><i data-lucide="folder-open" class="tab-icon"></i>Projects Tracker</button>
-    <button class="nav-tab" onclick="switchTab('rtf',this)"><i data-lucide="sprout" class="tab-icon"></i>RTF Pilot</button>
   </div>
 </div>
 
@@ -373,6 +378,43 @@ tbody tr:last-child td{border-bottom:none;}
       </div>
     </div>
 
+    <!-- Active Trainers per Year — placeholder -->
+    <div class="chart-card" style="margin-bottom:16px;">
+      <h3>Active Trainers per Year</h3>
+      <div class="sub">Number of active trainers delivering sessions, by year · Placeholder — awaiting data source</div>
+      <div style="height:200px;border:1.5px dashed rgba(46,12,30,0.18);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(46,12,30,0.02);">
+        <i data-lucide="users" style="width:26px;height:26px;color:var(--brown-mid);opacity:0.4;"></i>
+        <div style="font-size:11px;font-weight:600;color:var(--brown-mid);opacity:0.55;">Chart placeholder — plug in active trainer counts per year</div>
+      </div>
+    </div>
+
+    <!-- Implementing Partners — carousel placeholder -->
+    <div class="chart-card" style="margin-bottom:0;">
+      <h3>Implementing Partners</h3>
+      <div class="sub">Logos of implementing &amp; delivery partners · Placeholder — awaiting partner logo assets</div>
+      <div class="partner-carousel-wrap">
+        <div class="partner-carousel-track">
+          <div class="partner-logo-ph">M&amp;S</div>
+          <div class="partner-logo-ph">RTF</div>
+          <div class="partner-logo-ph">Innocent</div>
+          <div class="partner-logo-ph">Waitrose</div>
+          <div class="partner-logo-ph">Solania</div>
+          <div class="partner-logo-ph">Compassion</div>
+          <div class="partner-logo-ph">M.Vinader</div>
+          <div class="partner-logo-ph">KZN</div>
+          <!-- duplicated set for seamless loop -->
+          <div class="partner-logo-ph">M&amp;S</div>
+          <div class="partner-logo-ph">RTF</div>
+          <div class="partner-logo-ph">Innocent</div>
+          <div class="partner-logo-ph">Waitrose</div>
+          <div class="partner-logo-ph">Solania</div>
+          <div class="partner-logo-ph">Compassion</div>
+          <div class="partner-logo-ph">M.Vinader</div>
+          <div class="partner-logo-ph">KZN</div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /overview -->
 
   <!-- ═══ KENYA ═══ -->
@@ -417,24 +459,6 @@ tbody tr:last-child td{border-bottom:none;}
           </table>
         </div>
         <div class="chart-wrap" style="height:160px;margin-top:14px;"><canvas id="chart-kenya-delivery"></canvas></div>
-      </div>
-    </div>
-
-    <!-- Kenya annual reach table -->
-    <div class="card" style="margin-bottom:16px;">
-      <div style="font-size:14px;font-weight:700;color:var(--purple);margin-bottom:4px;">Kenya Annual Reach by Context</div>
-      <div style="font-size:11px;color:var(--brown-mid);margin-bottom:14px;">Sourced from Total Reach — Globally tracker. Supply Chain / Community split available from 2022–2026.</div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Year</th><th>Community</th><th>Supply Chain</th><th>Total</th></tr></thead>
-          <tbody>
-            <tr><td>2023</td><td style="color:var(--green);font-weight:700;">8,355</td><td style="color:var(--purple);font-weight:700;">62</td><td style="font-weight:800;color:var(--orange);">8,417</td></tr>
-            <tr><td>2024</td><td style="color:var(--green);font-weight:700;">2,975</td><td style="color:var(--purple);font-weight:700;">147</td><td style="font-weight:800;color:var(--orange);">3,122</td></tr>
-            <tr><td>2025</td><td style="color:var(--green);font-weight:700;">3,148</td><td style="color:var(--purple);font-weight:700;">917</td><td style="font-weight:800;color:var(--orange);">4,065</td></tr>
-            <tr><td>2026 (YTD)</td><td style="color:var(--green);font-weight:700;">895</td><td style="color:var(--purple);font-weight:700;">48</td><td style="font-weight:800;color:var(--orange);">943</td></tr>
-            <tr style="border-top:2px solid rgba(46,12,30,0.12);"><td style="font-weight:800;">Total 2023–2026</td><td style="font-weight:800;color:var(--green);">15,373</td><td style="font-weight:800;color:var(--purple);">1,174</td><td style="font-weight:900;color:var(--orange);">16,547</td></tr>
-          </tbody>
-        </table>
       </div>
     </div>
 
@@ -529,118 +553,6 @@ tbody tr:last-child td{border-bottom:none;}
     <div id="proj-grouped"></div>
   </div><!-- /projects -->
 
-  <!-- ═══ RTF PILOT ═══ -->
-  <div class="panel" id="panel-rtf">
-    <div class="section-header">
-      <h2>Rising Tide Foundation — Pilot Countries</h2>
-      <p>Community-level EL pilot roll-out · Kenya, Colombia, South Africa &amp; India · 2025–2027 · <strong>4 Countries</strong></p>
-    </div>
-
-    <div class="grid-4">
-      <div class="stat-card"><div class="big" id="rtf-total">980</div><div class="label">Total RTF Reach</div><div class="desc">Across all 4 countries</div></div>
-      <div class="stat-card purple"><div class="big" id="rtf-male">399</div><div class="label">Total Male</div><div class="desc">Male participants</div></div>
-      <div class="stat-card"><div class="big" id="rtf-female">581</div><div class="label">Total Female</div><div class="desc">Female participants</div></div>
-      <div class="stat-card green"><div class="big" id="rtf-classes">25</div><div class="label">Classes Delivered</div><div class="desc">Total sessions completed</div></div>
-    </div>
-
-    <div class="rtf-grid" id="rtf-country-cards"></div>
-
-    <div class="grid-2">
-      <div class="chart-card">
-        <h3>Kenya — Delivery Pathway Breakdown</h3>
-        <div class="sub">Reach by delivery pathway · From RTF Pilot Tracker (2026) · Total: 895</div>
-        <div class="table-wrap" style="margin-top:10px;">
-          <table>
-            <thead><tr><th>Delivery Pathway</th><th style="text-align:right;">Classes</th><th style="text-align:right;">Reach</th></tr></thead>
-            <tbody>
-              <tr><td><span class="pill pill-community">Direct Delivery — Community</span></td><td style="text-align:right;">16</td><td style="font-weight:700;color:var(--green);text-align:right;">604</td></tr>
-              <tr><td><span class="pill pill-supply">Direct Delivery — Partner Org</span></td><td style="text-align:right;">6</td><td style="font-weight:700;color:var(--purple);text-align:right;">245</td></tr>
-              <tr><td><span class="pill pill-ns">New Established Trainer</span></td><td style="text-align:right;">1</td><td style="font-weight:700;text-align:right;">46</td></tr>
-              <tr style="border-top:2px solid rgba(46,12,30,0.1);"><td style="font-weight:700;">Total</td><td style="font-weight:700;text-align:right;">23</td><td style="font-weight:800;color:var(--orange);text-align:right;">895</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="chart-wrap" style="height:160px;margin-top:14px;"><canvas id="chart-rtf-kenya"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>Active Country Comparison</h3>
-        <div class="sub">Reach per pilot country so far</div>
-        <div class="chart-wrap" style="height:220px"><canvas id="chart-rtf-compare"></canvas></div>
-      </div>
-    </div>
-
-    <!-- Gender breakdown Kenya -->
-    <div class="grid-2">
-      <div class="chart-card">
-        <h3>Kenya — Gender Breakdown (2026 YTD)</h3>
-        <div class="sub">From RTF Pilot Tracker · Kenya sessions 2026</div>
-        <div style="margin-top:16px;">
-          <div class="gender-row">
-            <div class="g-header"><span class="g-name" style="color:var(--orange);">Female</span><span class="g-pct">551 · 61.6%</span></div>
-            <div class="g-track"><div class="g-f" style="width:61.6%"></div><div class="g-m" style="width:38.4%"></div></div>
-          </div>
-          <div class="gender-row">
-            <div class="g-header"><span class="g-name" style="color:var(--purple);">Male</span><span class="g-pct">344 · 38.4%</span></div>
-            <div class="g-track"><div class="g-m" style="width:38.4%"></div></div>
-          </div>
-        </div>
-        <div style="margin-top:14px;font-size:11px;color:var(--brown-mid);">Total participants with gender recorded: <strong>895</strong></div>
-      </div>
-      <div class="chart-card">
-        <h3>Kenya — Counties Reached </h3>
-        <div class="sub">From RTF Pilot Tracker — programme locations</div>
-        <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;">
-          <div style="display:flex;align-items:center;gap:10px;"><div style="width:10px;height:10px;border-radius:50%;background:var(--orange);flex-shrink:0;"></div><span style="font-size:12px;font-weight:600;">Nairobi (NRB)</span></div>
-          <div style="display:flex;align-items:center;gap:10px;"><div style="width:10px;height:10px;border-radius:50%;background:var(--purple);flex-shrink:0;"></div><span style="font-size:12px;font-weight:600;">Makueni (MKN)</span></div>
-          <div style="display:flex;align-items:center;gap:10px;"><div style="width:10px;height:10px;border-radius:50%;background:var(--green);flex-shrink:0;"></div><span style="font-size:12px;font-weight:600;">Nyamira / Kisii (NYM / KSI)</span></div>
-          <div style="display:flex;align-items:center;gap:10px;"><div style="width:10px;height:10px;border-radius:50%;background:#d97706;flex-shrink:0;"></div><span style="font-size:12px;font-weight:600;">Embu (EMB)</span></div>
-          <div style="display:flex;align-items:center;gap:10px;"><div style="width:10px;height:10px;border-radius:50%;background:#6b7280;flex-shrink:0;"></div><span style="font-size:12px;font-weight:600;">Murang'a</span></div>
-          <div style="display:flex;align-items:center;gap:10px;"><div style="width:10px;height:10px;border-radius:50%;background:#a3195b;flex-shrink:0;"></div><span style="font-size:12px;font-weight:600;">Naivasha (NVS)</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Reach by Location — End of May 2026 -->
-    <div class="chart-card" style="margin-bottom:16px;">
-      <div style="font-size:11px;font-weight:700;color:var(--brown-mid);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Reach by Location — End of May 2026</div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;">
-        <div style="flex:1;min-width:120px;background:var(--brown-light);border-radius:8px;padding:12px;text-align:center;border-top:3px solid var(--orange);">
-          <div style="font-size:22px;font-weight:900;color:var(--orange);">594</div>
-          <div style="font-size:10px;font-weight:600;color:var(--brown-mid);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">Nairobi</div>
-        </div>
-        <div style="flex:1;min-width:120px;background:var(--brown-light);border-radius:8px;padding:12px;text-align:center;border-top:3px solid var(--purple);">
-          <div style="font-size:22px;font-weight:900;color:var(--purple);">338</div>
-          <div style="font-size:10px;font-weight:600;color:var(--brown-mid);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">Nyamira / Kisii</div>
-        </div>
-        <div style="flex:1;min-width:120px;background:var(--brown-light);border-radius:8px;padding:12px;text-align:center;border-top:3px solid #a3195b;">
-          <div style="font-size:22px;font-weight:900;color:#a3195b;">164</div>
-          <div style="font-size:10px;font-weight:600;color:var(--brown-mid);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">Embu</div>
-        </div>
-        <div style="flex:1;min-width:120px;background:var(--brown-light);border-radius:8px;padding:12px;text-align:center;border-top:3px solid #d97706;">
-          <div style="font-size:22px;font-weight:900;color:#d97706;">139</div>
-          <div style="font-size:10px;font-weight:600;color:var(--brown-mid);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">Makueni</div>
-        </div>
-        <div style="flex:1;min-width:120px;background:var(--brown-light);border-radius:8px;padding:12px;text-align:center;border-top:3px solid #6b7280;">
-          <div style="font-size:22px;font-weight:900;color:#6b7280;">48</div>
-          <div style="font-size:10px;font-weight:600;color:var(--brown-mid);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">Murang'a</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="dark-band">
-      <div class="dark-band-inner">
-        <h3>RTF Ripple Effect</h3>
-        <p>Applying the ×5 multiplier — for every person trained directly, skills and mindset change ripple to family and peers.</p>
-        <div class="dark-stats">
-          <div class="dark-stat"><div class="num" id="rtf-direct">980</div><div class="lbl">Direct Reach</div></div>
-          <div class="dark-div"></div>
-          <div class="dark-stat"><div class="num" id="rtf-ripple">4,900</div><div class="lbl">Estimated Ripple</div></div>
-          <div class="dark-div"></div>
-          <div class="dark-stat"><div class="num" id="rtf-fpct">59.3%</div><div class="lbl">Female Focus</div></div>
-        </div>
-      </div>
-    </div>
-  </div><!-- /rtf -->
 
 </div><!-- /main -->
 
@@ -954,15 +866,13 @@ function filterProjects(){
   order.forEach(function(name){
     var items=groups[name];
     var totalN=items.reduce(function(s,p){return s+p.n;},0);
-    var totalT=items.reduce(function(s,p){return s+p.target;},0);
-    var pct=totalT>0?Math.min(100,Math.round(totalN/totalT*100)):0;
     var type=items[0].type;
     var funder=items[0].funder;
     var tc=type==='Supply Chain'?'supply':'community';
     var statuses=[...new Set(items.map(function(p){return p.st;}))];
     var stLabel=statuses.join(', ');
     var scClass=items[0].st==='Closure'?'pill-done':items[0].st==='In Progress'?'pill-prog':'pill-ns';
-    var countries=items.map(function(p){return p.country;});
+    var countries=[...new Set(items.map(function(p){return p.country;}))];
     var id='grp-'+name.replace(/[^a-z0-9]/gi,'_');
 
     html+='<div class="proj-group-card">'+
@@ -978,18 +888,16 @@ function filterProjects(){
         '<div class="proj-group-meta">'+
           '<div style="text-align:right;">'+
             '<div style="font-size:18px;font-weight:800;color:var(--orange);">'+fmt(totalN)+'</div>'+
-            '<div style="font-size:10px;color:var(--brown-mid);">of '+fmt(totalT)+' target</div>'+
-            '<div class="prog-track" style="width:120px;margin-top:4px;"><div class="prog-fill '+tc+'" style="width:'+pct+'%"></div></div>'+
+            '<div style="font-size:10px;color:var(--brown-mid);">reached</div>'+
           '</div>'+
           '<div class="proj-group-expand">'+
-            (items.length>1?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 9l-7 7-7-7"/></svg>'+items.length+' countries':'<span class="pill '+scClass+'">'+stLabel+'</span>')+
+            (countries.length>1?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 9l-7 7-7-7"/></svg>'+countries.length+' countries':(items.length>1?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 9l-7 7-7-7"/></svg>'+items.length+' sites':'<span class="pill '+scClass+'">'+stLabel+'</span>'))+
           '</div>'+
         '</div>'+
       '</div>'+
       '<div class="proj-countries-wrap" id="'+id+'">'+
         '<div class="proj-country-list">'+
         items.map(function(p){
-          var pp=p.target>0?Math.min(100,Math.round(p.n/p.target*100)):0;
           var psc=p.st==='Closure'?'pill-done':p.st==='In Progress'?'pill-prog':'pill-ns';
           return '<div class="proj-country-item">'+
             '<div class="proj-country-name">🌍 '+p.country+'</div>'+
@@ -1001,9 +909,7 @@ function filterProjects(){
             '</div>'+
             '<div style="margin-top:8px;display:flex;justify-content:space-between;font-size:11px;">'+
               '<span style="font-weight:700;color:var(--orange);">'+fmt(p.n)+' reached</span>'+
-              '<span style="color:var(--brown-mid);">Target: '+fmt(p.target)+'</span>'+
             '</div>'+
-            '<div class="prog-track"><div class="prog-fill '+tc+'" style="width:'+pp+'%"></div></div>'+
           '</div>';
         }).join('')+
         '</div>'+
