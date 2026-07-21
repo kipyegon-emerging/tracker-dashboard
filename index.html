@@ -177,6 +177,9 @@ tbody tr:last-child td{border-bottom:none;}
 .insight h4{font-size:13px;font-weight:700;color:var(--purple);margin-bottom:5px;}
 .insight p{font-size:12px;color:var(--brown-mid);line-height:1.75;}
 
+.partner-toggle-btn{padding:6px 14px;font-size:11px;font-weight:600;color:var(--brown-mid);opacity:0.55;cursor:pointer;border:1.5px solid rgba(46,12,30,0.12);background:transparent;border-radius:99px;font-family:'Poppins',sans-serif;transition:all 0.15s;}
+.partner-toggle-btn:hover:not(.active){opacity:0.85;background:rgba(46,12,30,0.03);}
+.partner-toggle-btn.active{color:#fff;opacity:1;background:var(--purple);border-color:var(--purple);}
 .funder-list{display:flex;flex-direction:column;gap:10px;}
 .funder-row{display:flex;align-items:center;gap:10px;}
 .funder-name{width:140px;font-size:11px;color:var(--brown-mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;}
@@ -359,8 +362,12 @@ tbody tr:last-child td{border-bottom:none;}
       </div>
       <div class="chart-card">
         <h3>Key Partners by Reach</h3>
-        <div class="sub">Total reach per major partner · 2023–2026</div>
-        <div id="funder-list" class="funder-list" style="margin-top:8px;"></div>
+        <div class="sub" id="funder-list-sub">Total reach per funding partner · 2023–2026</div>
+        <div class="partner-toggle" style="display:flex;gap:6px;margin-top:10px;">
+          <button class="partner-toggle-btn active" id="btn-funding" onclick="switchPartnerView('funding')">Funding Partners</button>
+          <button class="partner-toggle-btn" id="btn-implementing" onclick="switchPartnerView('implementing')">Implementing Partners</button>
+        </div>
+        <div id="funder-list" class="funder-list" style="margin-top:14px;"></div>
       </div>
     </div>
 
@@ -766,26 +773,51 @@ function renderOverview(){
     }
   });
 
-  // ── Key Partners bar — from Partner Reach Summary (all years) ──
-  var partnerData=[
-    ['RTF',11044],
-    ['Solania',4322],
-    ['M&S',2365],
-    ['FSS',1615],
-    ['innocent',725],
-    ['Compassion Intl',390],
-    ['Mayor of Freetown',201],
-    ['Metanoia',180]
-  ];
-  var fMax=partnerData[0][1],fH='';
-  partnerData.forEach(function(f,i){
-    var pct=(f[1]/fMax*100).toFixed(1);
-    var barColor=i===0?CO:i===1?CP:i===2?'#e9b7ae':i===3?CO:i===4?CP:'#e9b7ae';
-    fH+='<div class="funder-row"><div class="funder-name">'+f[0]+'</div>'+
-        '<div class="funder-bar-wrap"><div class="funder-bar-fill" style="width:'+pct+'%;background:'+barColor+';height:100%;border-radius:99px;"></div></div>'+
-        '<div class="funder-val">'+fmt(f[1])+'</div></div>';
-  });
-  el('funder-list').innerHTML=fH;
+  // ── Key Partners bar — from Partner Reach Summary, split by role (all years) ──
+  // Funding partners = organisations providing the funding/grant for a programme.
+  // Implementing partners = organisations delivering training on the ground alongside EL/RTF.
+  // Classified from the "Funding_Implementing Partners" mapping tab in Partner Reach Summary.xlsx.
+  window.partnerDataByView={
+    funding:[
+      ['RTF',9474],
+      ['Solania (Foundation)',6123],
+      ['M&S',2365],
+      ['FSS',1538],
+      ['innocent',725],
+      ['Compassion Intl',390],
+      ['Emerging Leaders',201],
+      ['Metanoia',180]
+    ],
+    implementing:[
+      ['Kenyan Community (UKV)',12287],
+      ['WCW',3148],
+      ['Nduti / Momul / Gacharage',917],
+      ['Ringtons',429],
+      ['Assophthe',424],
+      ['Matthew Algie',400],
+      ['Mayor of Freetown',201],
+      ['Direct / RTF-EL Team',180]
+    ]
+  };
+  function renderPartnerList(view){
+    var data=window.partnerDataByView[view];
+    var fMax=data[0][1],fH='';
+    data.forEach(function(f,i){
+      var pct=(f[1]/fMax*100).toFixed(1);
+      var barColor=i===0?CO:i===1?CP:i===2?'#e9b7ae':i===3?CO:i===4?CP:'#e9b7ae';
+      fH+='<div class="funder-row"><div class="funder-name">'+f[0]+'</div>'+
+          '<div class="funder-bar-wrap"><div class="funder-bar-fill" style="width:'+pct+'%;background:'+barColor+';height:100%;border-radius:99px;"></div></div>'+
+          '<div class="funder-val">'+fmt(f[1])+'</div></div>';
+    });
+    el('funder-list').innerHTML=fH;
+  }
+  window.switchPartnerView=function(view){
+    el('btn-funding').classList.toggle('active',view==='funding');
+    el('btn-implementing').classList.toggle('active',view==='implementing');
+    el('funder-list-sub').textContent=view==='funding'?'Total reach per funding partner · 2023–2026':'Total reach per implementing partner · 2023–2026';
+    renderPartnerList(view);
+  };
+  renderPartnerList('funding');
 
   // ── Context bar chart ──
   var yrs=[2023,2024,2025,2026];
